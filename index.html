@@ -112,10 +112,10 @@
                         <span id="syncStatusText">متصل بالسحابة (Google Sheets)</span>
                     </div>
 
-                    <!-- زر حفظ التعديلات وإرسال نسخة احتياطية -->
+                    <!-- زر حفظ التعديلات في السحابة فقط -->
                     <button onclick="manualSaveToCloud(false)" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-1.5 shadow-md border border-emerald-400 no-print">
                         <span>💾</span>
-                        <span>حفظ التعديلات في السحابة + نسخة احتياطية</span>
+                        <span>حفظ التعديلات في السحابة</span>
                     </button>
 
                     <!-- زر تحميل نسخة احتياطية محلية -->
@@ -142,7 +142,7 @@
         <div class="bg-emerald-950 text-emerald-100 px-4 py-2 text-center text-xs md:text-sm font-semibold no-print flex flex-wrap items-center justify-between gap-2 border-b border-emerald-800">
             <div class="flex items-center gap-2 mx-auto md:mx-0">
                 <span>✏️</span>
-                <span>وضع التعديل المباشر مفعل. يمكنك تعديل أي خلية أو استعادة نسخة احتياطية من الكمبيوتر، ثم الضغط على زر "حفظ التعديلات في السحابة" بالأعلى.</span>
+                <span>وضع التعديل المباشر مفعل. نسبة الإنجاز تحسب تلقائياً (المفوتّر مع VAT ÷ قيمة المشروع مع VAT)، ويمكنك تعديلها يدوياً عند الحاجة. ثم اضغط "حفظ التعديلات في السحابة".</span>
             </div>
             <div class="flex items-center gap-2 mx-auto md:mx-0">
                 <label class="flex items-center gap-1.5 cursor-pointer text-xs bg-emerald-900 px-2.5 py-1 rounded-lg hover:bg-emerald-800 transition">
@@ -152,7 +152,7 @@
             </div>
         </div>
 
-        <!-- KPI Summary Cards (بدون الرسوم البيانية أو نسب التحصيل والفوترة الصفرية) -->
+        <!-- KPI Summary Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 bg-slate-50 border-b border-slate-200">
             <div class="bg-white border-r-4 border-blue-600 p-3.5 rounded-xl shadow-sm border border-slate-200/80">
                 <div class="text-xs text-slate-500 font-bold mb-1">إجمالي قيمة العقود (مع VAT)</div>
@@ -227,7 +227,6 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqtWxGQZ_YTYiAQC0EXsyAhd3hFMPH-k6zl91hTlI8qIGCJggGd5G8p8T9439VYNsV/exec";
         
-        // تحديث تاريخ اليوم تلقائياً ومباشرة عند فتح الصفحة
         function getTodayFormatted() {
             const today = new Date();
             const d = String(today.getDate()).padStart(2, '0');
@@ -237,21 +236,21 @@
         }
 
         const initialData = [
-            { cat: 1, id: "CQ-00001759", project: "فندق ابراج مكه", client: "شركة مكه للانشاء والتعمير", projectValue: 5000000, paid: 4950000, billed: 5000000, unbilledNoVat: 0, unpaidNoVat: 43478, tax: 6522, unpaidWithVat: 50000, note: "متبقي المشروع / باقي مشروع الغلايات", files: [], completion: 99 },
-            { cat: 1, id: "CQ-00001534", project: "مغسلة أصول الطيب", client: "أصول الطيب", projectValue: 845250, paid: 645250, billed: 845250, unbilledNoVat: 0, unpaidNoVat: 200000, tax: 30000, unpaidWithVat: 200000, note: "متبقي مطالبة مالية", files: [], completion: 100 },
-            { cat: 1, id: "CQ-00001935", project: "القدية 2", client: "شركة مصنع التميمي للمباني الجاهزة", projectValue: 6900000, paid: 3450000, billed: 6900000, unbilledNoVat: 0, unpaidNoVat: 3000000, tax: 450000, unpaidWithVat: 3450000, note: "متبقي مطالبة مالية", files: [], completion: 100 },
-            { cat: 1, id: "CQ-00001748", project: "فندق كراون بلازا الحمراء", client: "الشركة العربية للفنادق", projectValue: 1368500, paid: 891900, billed: 1368500, unbilledNoVat: 0, unpaidNoVat: 414435, tax: 62165, unpaidWithVat: 476600, note: "متبقي مطالبة مالية", files: [], completion: 100 },
-            { cat: 2, id: "CQ-00002356", project: "RADISSSON BLU - AL HASSA", client: "مؤسسة عبداللطيف العبد اللطيف", projectValue: 5000000, paid: 4500000, billed: 4382730.60, unbilledNoVat: 536756, unpaidNoVat: 434783, tax: 65217, unpaidWithVat: 500000, note: "متبقي مطالبة مالية", files: [], completion: 90 },
-            { cat: 2, id: "CQ-00002122", project: "HILTON DAMMAM", client: "شركة نظرة المستقبلية للتجارة", projectValue: 6440000, paid: 5188750, billed: 6305523.60, unbilledNoVat: 116936, unpaidNoVat: 1088043, tax: 163207, unpaidWithVat: 1251250, note: "متبقي مطالبة مالية", files: [], completion: 85 },
-            { cat: 2, id: "CQ-00002350", project: "فندق جاردن إن السبعين", client: "شركة البكرية المحدودة", projectValue: 4370000, paid: 3059000, billed: 2583682.00, unbilledNoVat: 1553320, unpaidNoVat: 1140000, tax: 171000, unpaidWithVat: 1311000, note: "متبقي مطالبة مالية", files: [], completion: 70 },
-            { cat: 2, id: "CQ-00002122", project: "Hampton Inn MADINA", client: "شركة نظرة المستقبلية للتجارة", projectValue: 1725000, paid: 810500, billed: 1597489.84, unbilledNoVat: 110878, unpaidNoVat: 795217, tax: 119283, unpaidWithVat: 914500, note: "متبقي مطالبة مالية", files: [], completion: 80 },
-            { cat: 2, id: "CQ-00002168", project: "Hilton Double Tree", client: "شركة فهد عبدالانصاري وإخوانه", projectValue: 4155249, paid: 3739724, billed: 3940126.55, unbilledNoVat: 187063, unpaidNoVat: 361326, tax: 54199, unpaidWithVat: 415525, note: "متبقي مطالبة مالية", files: [], completion: 90 },
-            { cat: 2, id: "CQ-00002122", project: "Hilton DoubleTree Al Marwa", client: "شركة الخليوي للتطوير العقاري", projectValue: 4140000, paid: 2070000, billed: 659304.20, unbilledNoVat: 3026692, unpaidNoVat: 1800000, tax: 270000, unpaidWithVat: 2070000, note: "متبقي مطالبة مالية", files: [], completion: 50 },
-            { cat: 3, id: "CQ-00002793", project: "شركة الطهارة المتكاملة", client: "شركة الطهارة المتكاملة", projectValue: 2434550, paid: 1217275, billed: 0, unbilledNoVat: 2117000, unpaidNoVat: 1058500, tax: 158775, unpaidWithVat: 1217275, note: "تم تعميد المشروع", files: [], completion: 30 },
-            { cat: 3, id: "CQ-00002769", project: "حياة الايمان", client: "شركة حياة الايمان للتشغيل والصيانة", projectValue: 3001500, paid: 1500000, billed: 0, unbilledNoVat: 2610000, unpaidNoVat: 1305652, tax: 195848, unpaidWithVat: 1501500, note: "تم تعميد المشروع", files: [], completion: 25 },
-            { cat: 3, id: "CQ-00002733", project: "فندق مكارم", client: "شركة العقيق للتنمية العقارية", projectValue: 3013000, paid: 1506500, billed: 0, unbilledNoVat: 2620000, unpaidNoVat: 1310000, tax: 196500, unpaidWithVat: 1506500, note: "تم تعميد المشروع", files: [], completion: 20 },
-            { cat: 3, id: "CQ-00001935", project: "شركة التميمي", client: "شركة مصنع التميمي للمباني الجاهزة", projectValue: 2271246, paid: 681373.85, billed: 0, unbilledNoVat: 1974997, unpaidNoVat: 1382498, tax: 207375, unpaidWithVat: 1589872, note: "تم تعميد المشروع", files: [], completion: 15 },
-            { cat: 3, id: "CQ-00002400", project: "دار الهجرة انتركونتننتال", client: "شركة ديار المستدامة الفندقية", projectValue: 1725000, paid: 862500, billed: 0, unbilledNoVat: 1500000, unpaidNoVat: 750000, tax: 112500, unpaidWithVat: 862500, note: "تم تعميد المشروع", files: [], completion: 20 }
+            { cat: 1, id: "CQ-00001759", project: "فندق ابراج مكه", client: "شركة مكه للانشاء والتعمير", projectValue: 5000000, paid: 4950000, billed: 5000000, unbilledNoVat: 0, unpaidNoVat: 43478, tax: 6522, unpaidWithVat: 50000, note: "متبقي المشروع / باقي مشروع الغلايات", files: [] },
+            { cat: 1, id: "CQ-00001534", project: "مغسلة أصول الطيب", client: "أصول الطيب", projectValue: 845250, paid: 645250, billed: 845250, unbilledNoVat: 0, unpaidNoVat: 200000, tax: 30000, unpaidWithVat: 200000, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 1, id: "CQ-00001935", project: "القدية 2", client: "شركة مصنع التميمي للمباني الجاهزة", projectValue: 6900000, paid: 3450000, billed: 6900000, unbilledNoVat: 0, unpaidNoVat: 3000000, tax: 450000, unpaidWithVat: 3450000, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 1, id: "CQ-00001748", project: "فندق كراون بلازا الحمراء", client: "الشركة العربية للفنادق", projectValue: 1368500, paid: 891900, billed: 1368500, unbilledNoVat: 0, unpaidNoVat: 414435, tax: 62165, unpaidWithVat: 476600, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 2, id: "CQ-00002356", project: "RADISSSON BLU - AL HASSA", client: "مؤسسة عبداللطيف العبد اللطيف", projectValue: 5000000, paid: 4500000, billed: 4382730.60, unbilledNoVat: 536756, unpaidNoVat: 434783, tax: 65217, unpaidWithVat: 500000, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 2, id: "CQ-00002122", project: "HILTON DAMMAM", client: "شركة نظرة المستقبلية للتجارة", projectValue: 6440000, paid: 5188750, billed: 6305523.60, unbilledNoVat: 116936, unpaidNoVat: 1088043, tax: 163207, unpaidWithVat: 1251250, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 2, id: "CQ-00002350", project: "فندق جاردن إن السبعين", client: "شركة البكرية المحدودة", projectValue: 4370000, paid: 3059000, billed: 2583682.00, unbilledNoVat: 1553320, unpaidNoVat: 1140000, tax: 171000, unpaidWithVat: 1311000, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 2, id: "CQ-00002122", project: "Hampton Inn MADINA", client: "شركة نظرة المستقبلية للتجارة", projectValue: 1725000, paid: 810500, billed: 1597489.84, unbilledNoVat: 110878, unpaidNoVat: 795217, tax: 119283, unpaidWithVat: 914500, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 2, id: "CQ-00002168", project: "Hilton Double Tree", client: "شركة فهد عبدالانصاري وإخوانه", projectValue: 4155249, paid: 3739724, billed: 3940126.55, unbilledNoVat: 187063, unpaidNoVat: 361326, tax: 54199, unpaidWithVat: 415525, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 2, id: "CQ-00002122", project: "Hilton DoubleTree Al Marwa", client: "شركة الخليوي للتطوير العقاري", projectValue: 4140000, paid: 2070000, billed: 659304.20, unbilledNoVat: 3026692, unpaidNoVat: 1800000, tax: 270000, unpaidWithVat: 2070000, note: "متبقي مطالبة مالية", files: [] },
+            { cat: 3, id: "CQ-00002793", project: "شركة الطهارة المتكاملة", client: "شركة الطهارة المتكاملة", projectValue: 2434550, paid: 1217275, billed: 0, unbilledNoVat: 2117000, unpaidNoVat: 1058500, tax: 158775, unpaidWithVat: 1217275, note: "تم تعميد المشروع", files: [] },
+            { cat: 3, id: "CQ-00002769", project: "حياة الايمان", client: "شركة حياة الايمان للتشغيل والصيانة", projectValue: 3001500, paid: 1500000, billed: 0, unbilledNoVat: 2610000, unpaidNoVat: 1305652, tax: 195848, unpaidWithVat: 1501500, note: "تم تعميد المشروع", files: [] },
+            { cat: 3, id: "CQ-00002733", project: "فندق مكارم", client: "شركة العقيق للتنمية العقارية", projectValue: 3013000, paid: 1506500, billed: 0, unbilledNoVat: 2620000, unpaidNoVat: 1310000, tax: 196500, unpaidWithVat: 1506500, note: "تم تعميد المشروع", files: [] },
+            { cat: 3, id: "CQ-00001935", client: "شركة مصنع التميمي للمباني الجاهزة", project: "شركة التميمي", projectValue: 2271246, paid: 681373.85, billed: 0, unbilledNoVat: 1974997, unpaidNoVat: 1382498, tax: 207375, unpaidWithVat: 1589872, note: "تم تعميد المشروع", files: [] },
+            { cat: 3, id: "CQ-00002400", project: "دار الهجرة انتركونتننتال", client: "شركة ديار المستدامة الفندقية", projectValue: 1725000, paid: 862500, billed: 0, unbilledNoVat: 1500000, unpaidNoVat: 750000, tax: 112500, unpaidWithVat: 862500, note: "تم تعميد المشروع", files: [] }
         ];
 
         let currentData = [];
@@ -259,7 +258,6 @@
         let pendingBackupData = null;
         let activeProjectIndexForFiles = null;
 
-        // ضبط تاريخ اليوم فوراً
         document.getElementById('reportDate').innerText = getTodayFormatted();
 
         async function loadFromCloud() {
@@ -269,11 +267,8 @@
                 const data = await res.json();
                 if (data && data.projects && data.projects.length > 0) {
                     currentData = data.projects;
-                    currentData.forEach((p, idx) => { 
+                    currentData.forEach((p) => { 
                         if (!p.files) p.files = []; 
-                        if (p.completion === undefined || p.completion === null) {
-                            p.completion = initialData[idx] ? initialData[idx].completion : (p.projectValue > 0 ? Math.min(100, Math.round((p.paid / p.projectValue) * 100)) : 0);
-                        }
                     });
                     originalLoadedData = JSON.parse(JSON.stringify(currentData));
                     document.getElementById('reportDate').innerText = getTodayFormatted();
@@ -293,10 +288,9 @@
             filterTable();
         }
 
-        // إرسال البيانات إلى Google Apps Script عبر Form مخفي لتجاوز قيود CORS + إرسال إشعار ونسخة احتياطية للإيميل
         async function manualSaveToCloud(isSilent = false) {
             try {
-                if (!isSilent) document.getElementById('syncStatusText').innerText = 'جاري الحفظ وإرسال النسخة الاحتياطية...';
+                if (!isSilent) document.getElementById('syncStatusText').innerText = 'جاري الحفظ في السحابة...';
                 
                 document.getElementById('reportDate').innerText = getTodayFormatted();
                 originalLoadedData = JSON.parse(JSON.stringify(currentData));
@@ -304,8 +298,7 @@
                 const payload = {
                     projects: currentData,
                     reportDate: document.getElementById('reportDate').innerText,
-                    backupTimestamp: new Date().toISOString(),
-                    sendEmailBackup: true
+                    backupTimestamp: new Date().toISOString()
                 };
 
                 const form = document.createElement('form');
@@ -334,7 +327,7 @@
 
                 document.getElementById('syncStatusText').innerText = 'متصل بالسحابة (مباشر)';
                 if (!isSilent) {
-                    alert('✨ تم حفظ التعديلات بنجاح في السحابة (Google Sheets) وإرسال نسخة احتياطية إلى البريد الإلكتروني!');
+                    alert('✨ تم حفظ التعديلات بنجاح في سحابة Google Sheets!');
                 }
             } catch (e) {
                 document.getElementById('syncStatusText').innerText = 'خطأ في الحفظ';
@@ -342,7 +335,6 @@
             }
         }
 
-        // ميزة تنزيل نسخة احتياطية فورية على الجهاز
         function downloadLocalBackup() {
             const payload = {
                 projects: currentData,
@@ -359,14 +351,12 @@
             downloadAnchor.remove();
         }
 
-        // فتح نافذة اختيار ملف النسخة الاحتياطية من الكمبيوتر
         function triggerRestoreBackup() {
             const input = document.getElementById('backupFileInput');
             input.value = '';
             input.click();
         }
 
-        // قراءة ملف النسخة الاحتياطية من الكمبيوتر وعرض رسالة التأكيد (نعم / لا)
         function handleBackupFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -388,7 +378,6 @@
                         backupDate: parsed.backupDate || parsed.reportDate || getTodayFormatted()
                     };
 
-                    // عرض نافذة التأكيد المخصصة
                     document.getElementById('restoreFileInfo').innerText = `الملف المختار: ${file.name} (${projectsArray.length} مشروع)`;
                     document.getElementById('restoreConfirmModal').classList.remove('hidden');
                 } catch (err) {
@@ -398,25 +387,19 @@
             reader.readAsText(file);
         }
 
-        // تنفيذ قرار المستخدم: إذا كان "نعم" يرجع النسخة الاحتياطية، وإذا كان "لا" يرجع للملف الأصلي
         function confirmRestoreBackup(shouldRestore) {
             document.getElementById('restoreConfirmModal').classList.add('hidden');
 
             if (shouldRestore && pendingBackupData) {
-                // إذا اختار "نعم": استعادة النسخة الاحتياطية وتحديث الجدول والسحابة
                 currentData = JSON.parse(JSON.stringify(pendingBackupData.projects));
-                currentData.forEach((p, idx) => {
+                currentData.forEach((p) => {
                     if (!p.files) p.files = [];
-                    if (p.completion === undefined || p.completion === null) {
-                        p.completion = p.projectValue > 0 ? Math.min(100, Math.round((p.paid / p.projectValue) * 100)) : 0;
-                    }
                 });
                 document.getElementById('reportDate').innerText = getTodayFormatted();
                 filterTable();
                 manualSaveToCloud(true);
                 alert('✅ تم استعادة النسخة الاحتياطية من الكمبيوتر وتحديث البيانات بنجاح!');
             } else {
-                // إذا اختار "لا": الرجوع للملف الأصلي
                 currentData = JSON.parse(JSON.stringify(originalLoadedData.length > 0 ? originalLoadedData : initialData));
                 document.getElementById('reportDate').innerText = getTodayFormatted();
                 filterTable();
@@ -513,6 +496,17 @@
             return isNaN(val) ? 0 : val;
         }
 
+        function calculateCompletion(row) {
+            if (row.completion !== undefined && row.completion !== null && row.completion !== "" && !isNaN(row.completion) && row.manualCompletion) {
+                return parseNum(row.completion);
+            }
+            const projVal = parseNum(row.projectValue);
+            const billedVal = parseNum(row.billed);
+            if (projVal <= 0) return 0;
+            const ratio = (billedVal / projVal) * 100;
+            return Math.min(100, Math.max(0, Math.round(ratio)));
+        }
+
         function renderTables(data) {
             const container = document.getElementById('sectionsContainer');
             container.innerHTML = '';
@@ -538,7 +532,8 @@
                     const dataIndex = currentData.indexOf(row);
                     const paidPercent = row.projectValue > 0 ? Math.min(100, Math.round((row.paid / row.projectValue) * 100)) : 0;
                     const fileCount = row.files ? row.files.length : 0;
-                    const compPct = Math.min(100, Math.max(0, parseNum(row.completion !== undefined ? row.completion : paidPercent)));
+                    
+                    const compPct = calculateCompletion(row);
                     catTotal.completionSum += compPct;
                     const barColorClass = compPct >= 85 ? 'bg-emerald-600' : (compPct >= 50 ? 'bg-blue-600' : (compPct >= 25 ? 'bg-amber-500' : 'bg-rose-500'));
 
@@ -567,7 +562,7 @@
                             </td>
                             <td class="p-2 border bg-slate-50/80 min-w-[110px]">
                                 <div class="flex items-center justify-center gap-0.5 font-black text-xs text-slate-800">
-                                    <span contenteditable="true" onblur="updateCell(${dataIndex}, 'completion', this.innerText)" class="px-1 py-0.5 rounded bg-white border border-slate-300 shadow-inner">${compPct}</span>
+                                    <span contenteditable="true" onblur="updateCell(${dataIndex}, 'completion', this.innerText)" class="px-1 py-0.5 rounded bg-white border border-slate-300 shadow-inner" title="نسبة الإنجاز محسوبة تلقائياً (المفوتّر ÷ قيمة المشروع)، ويمكنك تعديلها يدوياً">${compPct}</span>
                                     <span>%</span>
                                 </div>
                                 <div class="w-full bg-slate-200 h-2 rounded-full mt-1.5 overflow-hidden border border-slate-300/60">
@@ -649,8 +644,10 @@
                 let parsed = parseNum(value);
                 if (field === 'completion') {
                     parsed = Math.min(100, Math.max(0, parsed));
+                    currentData[index].manualCompletion = true;
                 }
                 currentData[index][field] = parsed;
+
                 if (document.getElementById('autoCalcToggle').checked) {
                     const row = currentData[index];
                     if (field === 'projectValue' || field === 'paid') {
@@ -667,7 +664,7 @@
 
         function addNewRow() {
             const cat = parseInt(document.getElementById('categoryFilter').value === "ALL" ? "1" : document.getElementById('categoryFilter').value);
-            currentData.push({ cat: cat, id: "CQ-NEW", project: "مشروع جديد", client: "العميل", projectValue: 0, paid: 0, billed: 0, unbilledNoVat: 0, unpaidNoVat: 0, tax: 0, unpaidWithVat: 0, note: "-", files: [], completion: 0 });
+            currentData.push({ cat: cat, id: "CQ-NEW", project: "مشروع جديد", client: "العميل", projectValue: 0, paid: 0, billed: 0, unbilledNoVat: 0, unpaidNoVat: 0, tax: 0, unpaidWithVat: 0, note: "-", files: [], manualCompletion: false });
             filterTable();
         }
 
@@ -699,7 +696,6 @@
             XLSX.writeFile(wb, `شركة_الرهدن_المشاريع_${getTodayFormatted().replace(/\//g, '-')}.xlsx`);
         }
 
-        // جلب البيانات فور فتح الصفحة
         loadFromCloud();
     </script>
 </body>
