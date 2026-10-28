@@ -76,6 +76,23 @@
         </div>
     </div>
 
+    <!-- Restore Backup Confirmation Modal -->
+    <div id="restoreConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 text-center">
+            <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner">📂</div>
+            <h3 class="text-lg font-extrabold text-slate-800 mb-2">تأكيد استعادة النسخة الاحتياطية</h3>
+            <p id="restoreFileInfo" class="text-xs font-bold text-blue-700 bg-blue-50 py-2 px-3 rounded-lg mb-3 border border-blue-200"></p>
+            <p class="text-sm text-slate-600 mb-6 font-semibold">هل تريد استعادة هذه النسخة الاحتياطية؟<br><span class="text-xs text-slate-500 font-normal">(إذا اخترت "نعم" سيتم اعتماد النسخة وحفظها، وإذا اخترت "لا" سيتم الرجوع للملف الأصلي)</span></p>
+            <div class="flex justify-center gap-3">
+                <button onclick="confirmRestoreBackup(true)" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition">نعم، استعادة النسخة</button>
+                <button onclick="confirmRestoreBackup(false)" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-extrabold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition">لا، رجوع للملف الأصلي</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Input for Backup File Restore -->
+    <input type="file" id="backupFileInput" accept=".json" class="hidden" onchange="handleBackupFileSelect(event)">
+
     <div class="max-w-[1750px] mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 print-shadow-none">
         
         <!-- Header -->
@@ -104,7 +121,13 @@
                     <!-- زر تحميل نسخة احتياطية محلية -->
                     <button onclick="downloadLocalBackup()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-2 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-1.5 shadow-md border border-amber-300 no-print" title="تنزيل نسخة احتياطية JSON على جهازك">
                         <span>📦</span>
-                        <span>نسخة احتياطية</span>
+                        <span>حفظ نسخة للكمبيوتر</span>
+                    </button>
+
+                    <!-- زر استعادة نسخة احتياطية من الكمبيوتر -->
+                    <button onclick="triggerRestoreBackup()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 px-3 py-2 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-1.5 shadow-md border border-cyan-300 no-print" title="استعادة نسخة احتياطية محفوظة من جهازك">
+                        <span>📂</span>
+                        <span>استعادة نسخة من الكمبيوتر</span>
                     </button>
 
                     <div class="bg-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-xl text-sm font-extrabold border border-white/25 flex items-center gap-1.5">
@@ -119,7 +142,7 @@
         <div class="bg-emerald-950 text-emerald-100 px-4 py-2 text-center text-xs md:text-sm font-semibold no-print flex flex-wrap items-center justify-between gap-2 border-b border-emerald-800">
             <div class="flex items-center gap-2 mx-auto md:mx-0">
                 <span>✏️</span>
-                <span>وضع التعديل المباشر مفعل. يمكنك تعديل أي خلية أو نسبة إنجاز، ثم الضغط على زر "حفظ التعديلات في السحابة" بالأعلى للحفظ وإرسال نسخة احتياطية للإيميل تلقائياً.</span>
+                <span>وضع التعديل المباشر مفعل. يمكنك تعديل أي خلية أو استعادة نسخة احتياطية من الكمبيوتر، ثم الضغط على زر "حفظ التعديلات في السحابة" بالأعلى.</span>
             </div>
             <div class="flex items-center gap-2 mx-auto md:mx-0">
                 <label class="flex items-center gap-1.5 cursor-pointer text-xs bg-emerald-900 px-2.5 py-1 rounded-lg hover:bg-emerald-800 transition">
@@ -176,6 +199,7 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button onclick="addNewRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm">➕ إضافة مشروع</button>
+                <button onclick="triggerRestoreBackup()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm">📂 استعادة نسخة احتياطية</button>
                 <button onclick="resetData()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm">🔄 استعادة الافتراضي</button>
                 <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm">📊 تصدير Excel</button>
                 <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm">🖨️ طباعة</button>
@@ -231,6 +255,8 @@
         ];
 
         let currentData = [];
+        let originalLoadedData = [];
+        let pendingBackupData = null;
         let activeProjectIndexForFiles = null;
 
         // ضبط تاريخ اليوم فوراً
@@ -249,16 +275,18 @@
                             p.completion = initialData[idx] ? initialData[idx].completion : (p.projectValue > 0 ? Math.min(100, Math.round((p.paid / p.projectValue) * 100)) : 0);
                         }
                     });
-                    // دائماً نحدث تاريخ اليوم مباشرة ليوافق تاريخ اليوم الحالي
+                    originalLoadedData = JSON.parse(JSON.stringify(currentData));
                     document.getElementById('reportDate').innerText = getTodayFormatted();
                     document.getElementById('syncStatusText').innerText = 'متصل بالسحابة (مباشر)';
                 } else {
                     currentData = JSON.parse(JSON.stringify(initialData));
+                    originalLoadedData = JSON.parse(JSON.stringify(initialData));
                     document.getElementById('reportDate').innerText = getTodayFormatted();
                     await manualSaveToCloud(true);
                 }
             } catch (e) {
                 currentData = JSON.parse(JSON.stringify(initialData));
+                originalLoadedData = JSON.parse(JSON.stringify(initialData));
                 document.getElementById('reportDate').innerText = getTodayFormatted();
                 document.getElementById('syncStatusText').innerText = 'وضع غير متصل (محلي)';
             }
@@ -270,8 +298,8 @@
             try {
                 if (!isSilent) document.getElementById('syncStatusText').innerText = 'جاري الحفظ وإرسال النسخة الاحتياطية...';
                 
-                // تحديث التاريخ لتاريخ اليوم عند كل حفظ
                 document.getElementById('reportDate').innerText = getTodayFormatted();
+                originalLoadedData = JSON.parse(JSON.stringify(currentData));
 
                 const payload = {
                     projects: currentData,
@@ -329,6 +357,72 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
+        }
+
+        // فتح نافذة اختيار ملف النسخة الاحتياطية من الكمبيوتر
+        function triggerRestoreBackup() {
+            const input = document.getElementById('backupFileInput');
+            input.value = '';
+            input.click();
+        }
+
+        // قراءة ملف النسخة الاحتياطية من الكمبيوتر وعرض رسالة التأكيد (نعم / لا)
+        function handleBackupFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    const projectsArray = Array.isArray(parsed) ? parsed : (parsed.projects && Array.isArray(parsed.projects) ? parsed.projects : null);
+                    
+                    if (!projectsArray) {
+                        alert('❌ ملف النسخة الاحتياطية غير صالح أو لا يحتوي على بيانات المشاريع.');
+                        return;
+                    }
+
+                    pendingBackupData = {
+                        projects: projectsArray,
+                        fileName: file.name,
+                        backupDate: parsed.backupDate || parsed.reportDate || getTodayFormatted()
+                    };
+
+                    // عرض نافذة التأكيد المخصصة
+                    document.getElementById('restoreFileInfo').innerText = `الملف المختار: ${file.name} (${projectsArray.length} مشروع)`;
+                    document.getElementById('restoreConfirmModal').classList.remove('hidden');
+                } catch (err) {
+                    alert('❌ تعذر قراءة الملف. يرجى التأكد من اختيار ملف نسخة احتياطية بصيغة JSON.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // تنفيذ قرار المستخدم: إذا كان "نعم" يرجع النسخة الاحتياطية، وإذا كان "لا" يرجع للملف الأصلي
+        function confirmRestoreBackup(shouldRestore) {
+            document.getElementById('restoreConfirmModal').classList.add('hidden');
+
+            if (shouldRestore && pendingBackupData) {
+                // إذا اختار "نعم": استعادة النسخة الاحتياطية وتحديث الجدول والسحابة
+                currentData = JSON.parse(JSON.stringify(pendingBackupData.projects));
+                currentData.forEach((p, idx) => {
+                    if (!p.files) p.files = [];
+                    if (p.completion === undefined || p.completion === null) {
+                        p.completion = p.projectValue > 0 ? Math.min(100, Math.round((p.paid / p.projectValue) * 100)) : 0;
+                    }
+                });
+                document.getElementById('reportDate').innerText = getTodayFormatted();
+                filterTable();
+                manualSaveToCloud(true);
+                alert('✅ تم استعادة النسخة الاحتياطية من الكمبيوتر وتحديث البيانات بنجاح!');
+            } else {
+                // إذا اختار "لا": الرجوع للملف الأصلي
+                currentData = JSON.parse(JSON.stringify(originalLoadedData.length > 0 ? originalLoadedData : initialData));
+                document.getElementById('reportDate').innerText = getTodayFormatted();
+                filterTable();
+                alert('↩️ تم إلغاء الاستعادة والرجوع إلى الملف الأصلي.');
+            }
+            pendingBackupData = null;
         }
 
         function openAttachmentsModal(index) {
@@ -417,13 +511,6 @@
             if (!str) return 0;
             const val = parseFloat(str.toString().replace(/,/g, '').replace(/[^0-9.-]/g, ''));
             return isNaN(val) ? 0 : val;
-        }
-
-        function getCompletionColor(pct) {
-            if (pct >= 85) return 'bg-emerald-600 text-emerald-900 border-emerald-300';
-            if (pct >= 50) return 'bg-blue-600 text-blue-900 border-blue-300';
-            if (pct >= 25) return 'bg-amber-500 text-amber-900 border-amber-300';
-            return 'bg-rose-500 text-rose-900 border-rose-300';
         }
 
         function renderTables(data) {
