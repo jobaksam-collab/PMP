@@ -1,1 +1,2523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة مذاكرة الشهادة السودانية | المساق الأدبي - الدراسات الإسلامية</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'Tajawal', 'sans-serif'],
+          },
+          colors: {
+            emerald: {
+              950: '#022c22',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .tab-btn.active {
+      background-color: #047857;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+    }
+    .book-spine {
+      background: linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 20%, rgba(0,0,0,0.15) 100%);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.22s ease-out forwards;
+    }
+    .pdf-canvas-page {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      border-radius: 6px;
+      background: #ffffff;
+      margin: 0 auto 1.25rem auto;
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
 
+  <!-- Top Header -->
+  <header class="bg-gradient-to-l from-emerald-900 via-emerald-800 to-teal-900 text-white shadow-lg sticky top-0 z-30 border-b border-emerald-700/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <!-- Brand & Track Badge -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0 shadow-inner">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">منصة مذاكرة الشهادة السودانية</h1>
+              <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-400 text-emerald-950 shadow-sm">
+                المساق الأدبي • تخصص الدراسات الإسلامية
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-emerald-100/90 mt-0.5">
+              إرفاق كتب المواد (PDF) وفتحها شاشة كاملة • خطة الأبواب التفصيلية • مركز الامتحانات
+            </p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 custom-scrollbar" aria-label="التنقل الرئيسي">
+          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 bg-white/10 text-emerald-50 hover:bg-white/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            <span>الداش بورد الرئيسي</span>
+          </button>
+          <button onclick="switchTab('plan')" id="tab-plan" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 bg-white/10 text-emerald-50 hover:bg-white/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <span>خطة المذاكرة والأبواب</span>
+          </button>
+          <button onclick="switchTab('books')" id="tab-books" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 bg-white/10 text-emerald-50 hover:bg-white/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <span>الكتب المقررة (PDF)</span>
+            <span id="nav-books-count" class="bg-amber-400 text-emerald-950 text-[11px] font-extrabold px-1.5 py-0.2 rounded-full">9</span>
+          </button>
+          <button onclick="switchTab('exams')" id="tab-exams" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 bg-white/10 text-emerald-50 hover:bg-white/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>مركز الامتحانات ورفع PDF</span>
+            <span id="nav-exams-count" class="bg-emerald-300 text-emerald-950 text-[11px] font-extrabold px-1.5 py-0.2 rounded-full">5</span>
+          </button>
+          <button onclick="switchTab('schedule')" id="tab-schedule" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 bg-white/10 text-emerald-50 hover:bg-white/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span>الجدول الأسبوعي</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== VIEW 1: DASHBOARD (الداش بورد الرئيسي) ==================== -->
+    <section id="view-dashboard" class="space-y-6 animate-fade-in">
+      <!-- Top KPI Stats Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Overall Study Progress -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-bold text-slate-500">إنجاز خطة الأبواب</p>
+              <h2 id="kpi-progress-pct" class="text-2xl sm:text-3xl font-extrabold text-emerald-700 mt-1">0%</h2>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+              <div id="kpi-progress-bar" class="bg-emerald-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="kpi-chapters-count" class="text-xs text-slate-500 mt-1.5 font-medium">0 من 0 باب/وحدة مكتملة</p>
+          </div>
+        </div>
+
+        <!-- PDF Books Count -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-bold text-slate-500">مكتبة الكتب المقررة (PDF)</p>
+              <h2 id="kpi-books-total" class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1">9 كتب</h2>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between text-xs">
+            <span id="kpi-books-pages" class="text-slate-500 font-medium">إجمالي 1,680 صفحة مفهرسة</span>
+            <button onclick="switchTab('books')" class="text-emerald-700 font-bold hover:underline">تصفح الكتب ←</button>
+          </div>
+        </div>
+
+        <!-- Exams Uploaded & Pinned -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-bold text-slate-500">الامتحانات المرفوعة والنماذج</p>
+              <h2 id="kpi-exams-total" class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mt-1">5 امتحانات</h2>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between text-xs">
+            <span id="kpi-exams-solved" class="text-slate-500 font-medium">0 محلول • جاهز للرفع والعرض</span>
+            <button onclick="openUploadExamModal()" class="text-indigo-700 font-bold hover:underline">+ رفع امتحان PDF</button>
+          </div>
+        </div>
+
+        <!-- Specialization Focus -->
+        <div class="bg-gradient-to-br from-emerald-800 to-teal-900 text-white rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-bold text-emerald-200">المساق والتخصص المعتمد</p>
+              <h2 class="text-lg font-extrabold mt-1">الأدبي - دراسات إسلامية</h2>
+            </div>
+            <span id="kpi-attached-pdfs-badge" class="px-2 py-1 text-[11px] font-bold bg-amber-400 text-emerald-950 rounded-lg">7 مواد امتحانية</span>
+          </div>
+          <p class="text-xs text-emerald-100/90 mt-3 leading-relaxed">
+            الأساسية (4): تربية إسلامية، عربي، إنجليزي، رياضيات أساسية + الأدبي والإسلامي (3): تاريخ، جغرافيا، دراسات إسلامية وعربية متقدمة.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action Banner: Batch Attach Subject PDFs + Full Screen Reader -->
+      <div class="bg-white rounded-2xl p-5 border-2 border-emerald-300/90 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-gradient-to-l from-emerald-50/90 via-white to-amber-50/50">
+        <div class="flex items-start gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="text-base font-extrabold text-slate-800">مركز إرفاق كتب المواد (PDF) والفتح بشاشة كاملة ⛶</h3>
+              <span id="dashboard-attached-counter" class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-800">0 / 9 ملفات PDF مرفقة</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1">
+              يمكنك إرفاق ملفات الـ PDF للمواد كلها دفعة واحدة (أو لكل مادة على حدة بالأسفل) ليتم حفظها في المتصفح وفتح أي مادة أو كتاب في وضع <strong>الشاشة الكاملة (Full Screen)</strong>.
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto shrink-0">
+          <label for="batch-books-pdf-input" class="cursor-pointer flex-1 lg:flex-initial px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs sm:text-sm font-extrabold shadow-sm transition flex items-center justify-center gap-2">
+            <input id="batch-books-pdf-input" type="file" accept=".pdf,application/pdf" multiple class="hidden" onchange="handleBatchBooksPdfUpload(event)" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+            <span>إرفاق ملفات المواد PDF (دفعة واحدة)</span>
+          </label>
+          <button onclick="openAddBookModal()" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+            <span>إضافة / ربط كتاب PDF</span>
+          </button>
+          <button onclick="openUploadExamModal()" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>رفع امتحان للداش بورد (PDF)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Subject Progress & Direct Subject PDF Attach + Full Screen Open -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2.5 h-6 rounded-full bg-amber-500"></span>
+            <div>
+              <h3 class="text-base font-extrabold text-slate-800">المواد الدراسية المقررة (PDF) - إرفاق مباشر وفتح شاشة كاملة</h3>
+              <p class="text-xs text-slate-500">لكل مادة يمكنك إرفاق ملف الـ PDF الخاص بها وفتحه مباشرة في وضع الشاشة الكاملة ⛶ أو استعراض خطة الأبواب</p>
+            </div>
+          </div>
+          <button onclick="switchTab('plan')" class="text-xs font-bold text-emerald-700 hover:underline">
+            إدارة الأبواب والوحدات ←
+          </button>
+        </div>
+
+        <div id="dashboard-subjects-progress" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Dashboard Grid: Left (Pinned Exams & Quick Upload) + Right (9 PDF Textbooks Shelf) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Pinned Exams on Dashboard (5 cols) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
+          <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-6 rounded-full bg-indigo-600"></span>
+              <div>
+                <h3 class="text-base font-extrabold text-slate-800">الامتحانات المعروضة في الداش بورد</h3>
+                <p class="text-xs text-slate-500">امتحانات مرفوعة ومثبتة للوصول السريع والفتح شاشة كاملة</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openUploadExamModal()" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition">
+                + رفع امتحان
+              </button>
+              <button onclick="switchTab('exams')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                الكل
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Drag-and-Drop Exam Uploader on Dashboard -->
+          <div class="px-5 pt-4">
+            <label for="quick-exam-file-input" class="cursor-pointer block border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-50/80 transition rounded-xl p-3.5 text-center">
+              <input id="quick-exam-file-input" type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleQuickExamFileSelect(event)" />
+              <div class="flex items-center justify-center gap-2 text-indigo-700 font-bold text-xs sm:text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                <span>اضغط هنا لرفع ملف امتحان PDF مباشرة وعرضه في الداش بورد</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">يدعم ملفات PDF لامتحانات الشهادة السودانية والامتحانات التجريبية مع فتح شاشة كاملة</p>
+            </label>
+          </div>
+
+          <div id="dashboard-exams-list" class="p-5 space-y-3 flex-1 overflow-y-auto max-h-[520px] custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- 9 Uploaded PDF Books Overview Shelf (7 cols) -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
+          <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-6 rounded-full bg-emerald-600"></span>
+              <div>
+                <h3 class="text-base font-extrabold text-slate-800">حقيبة الكتب المقررة المرفقة (PDF) - إرفاق وفتح شاشة كاملة</h3>
+                <p class="text-xs text-slate-500">الكتب الـ 9 للصف الثالث الثانوي مع أزرار إرفاق الـ PDF وفتحه بشاشة كاملة ⛶</p>
+              </div>
+            </div>
+            <button onclick="switchTab('books')" class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition">
+              فتح المكتبة الكاملة ←
+            </button>
+          </div>
+
+          <div id="dashboard-books-grid" class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[600px] overflow-y-auto custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: STUDY PLAN BY SUBJECTS & CHAPTERS (خطة المذاكرة والأبواب) ==================== -->
+    <section id="view-plan" class="space-y-6 hidden animate-fade-in">
+      <!-- Controls & Filters -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-extrabold text-slate-800">خطة مذاكرة الشهادة السودانية المفصلة حسب المواد والأبواب</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              مبنية مباشرة على فهارس الكتب المقررة للصف الثالث الثانوي (المساق الأدبي - تخصص الدراسات الإسلامية)
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="plan-filter-status" onchange="renderStudyPlan()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="all">جميع الحالات (الكل)</option>
+              <option value="pending">قيد المذاكرة / لم يبدأ</option>
+              <option value="completed">مكتمل المذاكرة والمراجعة</option>
+            </select>
+            <div class="relative">
+              <input id="plan-search-input" type="text" oninput="renderStudyPlan()" placeholder="ابحث عن باب أو درس..." class="w-48 sm:w-60 pl-3 pr-8 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <svg class="w-4 h-4 text-slate-400 absolute right-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject Filter Pills -->
+        <div id="plan-subject-pills" class="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Detailed Chapters Container -->
+      <div id="plan-chapters-container" class="space-y-5">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: PDF BOOKS LIBRARY (مكتبة الكتب المقررة PDF) ==================== -->
+    <section id="view-books" class="space-y-6 hidden animate-fade-in">
+      <!-- Header & Search -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-extrabold text-slate-800">مكتبة الكتب الدراسية المقررة (PDF)</h2>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800">الكتب الـ 9 المرفقة</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            يمكنك إرفاق ملف الـ PDF لكل كتاب من جهازك وفتحه في وضع الشاشة الكاملة ⛶، أو استعراض الفهرس الكامل والأبواب لكل كتاب.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="relative">
+            <input id="books-search-input" type="text" oninput="renderBooksLibrary()" placeholder="ابحث في الكتب أو الأبواب..." class="w-52 sm:w-64 pl-3 pr-8 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <svg class="w-4 h-4 text-slate-400 absolute right-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <button onclick="openAddBookModal()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>رفع كتاب / مذكرة PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Books Grid -->
+      <div id="books-library-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: EXAMS CENTER (مركز الامتحانات ورفعها عند الحاجة) ==================== -->
+    <section id="view-exams" class="space-y-6 hidden animate-fade-in">
+      <!-- Top Banner & Upload Trigger -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-extrabold text-slate-800">مركز امتحانات الشهادة السودانية والنماذج التجريبية</h2>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-indigo-100 text-indigo-800">رفع وعرض PDF شاشة كاملة</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            مكان مخصص لرفع امتحانات الشهادة السودانية السابقة أو الامتحانات التجريبية بصيغة PDF عند الحاجة، مع إمكانية فتحها بشاشة كاملة وتثبيتها في الداش بورد.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select id="exams-filter-subject" onchange="renderExamsCenter()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">جميع المواد</option>
+            <option value="التربية الإسلامية">التربية الإسلامية</option>
+            <option value="اللغة العربية">اللغة العربية (نحو/بلاغة/أدب)</option>
+            <option value="الدراسات الإسلامية والعربية المتقدمة">الدراسات الإسلامية والعربية الخاصة</option>
+            <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+            <option value="الرياضيات الأساسية">الرياضيات الأساسية</option>
+            <option value="التاريخ">التاريخ</option>
+            <option value="الجغرافيا والدراسات البيئية">الجغرافيا والدراسات البيئية</option>
+          </select>
+
+          <select id="exams-filter-status" onchange="renderExamsCenter()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">كل الامتحانات</option>
+            <option value="pinned">المعروضة في الداش بورد فقط</option>
+            <option value="solved">تم حلها</option>
+            <option value="pending">جاهزة للحل</option>
+          </select>
+
+          <button onclick="openUploadExamModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <span>رفع امتحان PDF جديد</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dedicated Drag & Drop Upload Box -->
+      <div class="bg-gradient-to-l from-indigo-50/90 via-white to-emerald-50/70 rounded-2xl border-2 border-dashed border-indigo-300 p-6 text-center">
+        <div class="max-w-xl mx-auto space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-600/10 text-indigo-600 flex items-center justify-center mx-auto">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="text-base font-extrabold text-slate-800">ارفع ملف الامتحان (PDF) ليُحفظ ويُعرض في الداش بورد</h3>
+          <p class="text-xs text-slate-600">
+            اختر ملف PDF من جهازك أو اضغط على زر "رفع امتحان مع تحديد المادة والسنة" لتحديد المادة، السنة، الدرجة الكلية، وفتحه بشاشة كاملة.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
+            <label for="center-quick-exam-input" class="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
+              <input id="center-quick-exam-input" type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleQuickExamFileSelect(event)" />
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+              <span>اختيار ملف PDF سريع</span>
+            </label>
+            <button onclick="openUploadExamModal()" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-bold transition">
+              رفع امتحان مع تحديد المادة والسنة
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exams Cards Grid -->
+      <div id="exams-center-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 5: WEEKLY SCHEDULE (الجدول الأسبوعي المقترح) ==================== -->
+    <section id="view-schedule" class="space-y-6 hidden animate-fade-in">
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <h2 class="text-lg font-extrabold text-slate-800">الجدول الأسبوعي الموزون (المساق الأدبي - تخصص الدراسات الإسلامية)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              توزيع متوازن يجمع بين مواد الحفظ والفهم الصباحية، التطبيق وحل التمارين ظهراً، وحل امتحانات الشهادة مساءً
+            </p>
+          </div>
+          <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold self-start sm:self-center">
+            معدل 6 - 7 ساعات يومياً
+          </span>
+        </div>
+
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-right border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-700 text-xs font-extrabold border-b border-slate-200">
+                <th class="py-3.5 px-4 rounded-tr-xl">اليوم</th>
+                <th class="py-3.5 px-4">الفترة الصباحية (البكور: 6:00 - 9:30 ص)<br><span class="text-[11px] font-normal text-emerald-700">حفظ وتركيز عالٍ</span></th>
+                <th class="py-3.5 px-4">الفترة النهارية (11:00 ص - 2:30 م)<br><span class="text-[11px] font-normal text-indigo-700">فهم واستيعاب وأبواب طويلة</span></th>
+                <th class="py-3.5 px-4 rounded-tl-xl">الفترة المسائية (5:00 - 8:00 م)<br><span class="text-[11px] font-normal text-amber-700">تطبيق، قواعد، وحل امتحانات PDF</span></th>
+              </tr>
+            </thead>
+            <tbody id="weekly-schedule-tbody" class="divide-y divide-slate-100 text-xs sm:text-sm">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL 1: BOOK / PDF READER & CHAPTER EXPLORER ==================== -->
+  <div id="book-reader-modal" class="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs hidden flex items-center justify-center p-2 sm:p-4">
+    <div id="book-reader-dialog" class="bg-white w-full max-w-6xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[94vh] transition-all">
+      <!-- Modal Header -->
+      <div class="bg-slate-900 text-white px-4 sm:px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <span id="modal-book-badge" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold shrink-0">كتاب PDF</span>
+          <div class="truncate">
+            <h3 id="modal-book-title" class="text-sm sm:text-base font-extrabold truncate">عنوان الكتاب</h3>
+            <p id="modal-book-meta" class="text-xs text-slate-300 truncate"></p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <label id="modal-book-attach-label" class="cursor-pointer px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+            <input id="modal-book-file-input" type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToCurrentBook(event)" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <span>فتح ملف الـ PDF من جهازك</span>
+          </label>
+          <button onclick="openCurrentBookInFullScreen()" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm" title="فتح الكتاب في وضع الشاشة الكاملة">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+            <span>فتح شاشة كاملة ⛶</span>
+          </button>
+          <button onclick="closeBookReaderModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition" title="إغلاق">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 custom-scrollbar">
+        <!-- Table of Contents & Study Status (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
+            <h4 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">معلومات الكتاب المقرر</h4>
+            <p id="modal-book-authors" class="text-xs sm:text-sm font-bold text-slate-800 mt-1"></p>
+            <p id="modal-book-desc" class="text-xs text-slate-600 mt-1.5 leading-relaxed"></p>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <h4 class="text-sm font-extrabold text-slate-800">فهرس الأبواب والوحدات التفصيلي</h4>
+              <span class="text-[11px] text-emerald-700 font-bold">اضغط لتحديد الإنجاز</span>
+            </div>
+            <div id="modal-book-chapters" class="space-y-2 max-h-[380px] overflow-y-auto pr-1 custom-scrollbar">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Embedded PDF Viewer or Interactive Chapter Summary Area (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col bg-slate-100 rounded-xl border border-slate-200 overflow-hidden min-h-[450px]">
+          <div id="modal-pdf-viewer-container" class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: UPLOAD / EDIT EXAM PDF ==================== -->
+  <div id="upload-exam-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-indigo-900 text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <h3 class="text-base font-extrabold">رفع وإضافة امتحان إلى الداش بورد</h3>
+        </div>
+        <button onclick="closeUploadExamModal()" class="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="upload-exam-form" onsubmit="submitExamForm(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">عنوان الامتحان *</label>
+          <input id="exam-title-input" type="text" required placeholder="مثال: امتحان الشهادة السودانية - التربية الإسلامية 2023" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">المادة الدراسية *</label>
+            <select id="exam-subject-input" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="التربية الإسلامية">التربية الإسلامية</option>
+              <option value="اللغة العربية">اللغة العربية (نحو/بلاغة/أدب)</option>
+              <option value="الدراسات الإسلامية والعربية المتقدمة">الدراسات الإسلامية والعربية الخاصة</option>
+              <option value="اللغة الإنجليزية">اللغة الإنجليزية (SPINE 6)</option>
+              <option value="الرياضيات الأساسية">الرياضيات الأساسية</option>
+              <option value="التاريخ">التاريخ</option>
+              <option value="الجغرافيا والدراسات البيئية">الجغرافيا والدراسات البيئية</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">العام / نوع الامتحان</label>
+            <input id="exam-year-input" type="text" value="شهادة سودانية / تجريبي" placeholder="مثال: دورة 2024 / تجريبي الولاية" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">الزمن المحدد</label>
+            <input id="exam-duration-input" type="text" value="3 ساعات" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">الدرجة الكلية</label>
+            <input id="exam-marks-input" type="number" value="100" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ملف الامتحان (PDF) - اختياري أو ارفعه الآن للمعاينة الفورية</label>
+          <input id="exam-file-input" type="file" accept=".pdf,application/pdf" class="w-full text-xs text-slate-600 file:mr-0 file:ml-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl p-1.5" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ملاحظات أو الأبواب المشمولة في الامتحان</label>
+          <textarea id="exam-notes-input" rows="2" placeholder="مثال: يشمل أبواب النحو كاملة + علم البيان والمعاني..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between bg-indigo-50/70 px-4 py-2.5 rounded-xl border border-indigo-100">
+          <label for="exam-pin-checkbox" class="text-xs font-bold text-indigo-950 cursor-pointer">
+            تثبيت وعرض هذا الامتحان في الداش بورد الرئيسي
+          </label>
+          <input id="exam-pin-checkbox" type="checkbox" checked class="w-4 h-4 accent-indigo-600 rounded cursor-pointer" />
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeUploadExamModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm">حفظ وعرض الامتحان</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: EXAM VIEWER / SOLVER MODAL ==================== -->
+  <div id="exam-viewer-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+      <div class="bg-indigo-950 text-white px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span id="exam-modal-subject" class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-200 text-xs font-bold"></span>
+            <span id="exam-modal-year" class="text-xs text-slate-300"></span>
+          </div>
+          <h3 id="exam-modal-title" class="text-sm sm:text-base font-extrabold truncate mt-1"></h3>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+            <input id="exam-modal-attach-input" type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToCurrentExam(event)" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <span>إرفاق / تغيير ملف PDF</span>
+          </label>
+          <button onclick="openCurrentExamInFullScreen()" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+            <span>فتح شاشة كاملة ⛶</span>
+          </button>
+          <button onclick="toggleCurrentExamSolved()" id="exam-modal-solved-btn" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+            تحديد كـ "تم الحل"
+          </button>
+          <button onclick="closeExamViewerModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="exam-modal-body" class="flex-1 overflow-y-auto p-5 bg-slate-100 min-h-[450px] flex flex-col">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: ADD NEW PDF BOOK MODAL ==================== -->
+  <div id="add-book-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-emerald-900 text-white px-5 py-4 flex items-center justify-between">
+        <h3 class="text-base font-extrabold">إضافة كتاب أو مذكرة PDF جديدة للمكتبة</h3>
+        <button onclick="closeAddBookModal()" class="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form onsubmit="submitNewBookForm(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">اسم الكتاب أو المذكرة *</label>
+          <input id="new-book-title" type="text" required placeholder="مثال: مذكرة الخلاصة في الدراسات الإسلامية" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">المادة الدراسية *</label>
+            <select id="new-book-subject" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white">
+              <option value="التربية الإسلامية">التربية الإسلامية</option>
+              <option value="اللغة العربية">اللغة العربية</option>
+              <option value="الدراسات الإسلامية والعربية المتقدمة">الدراسات الإسلامية والعربية الخاصة</option>
+              <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+              <option value="الرياضيات الأساسية">الرياضيات الأساسية</option>
+              <option value="التاريخ">التاريخ</option>
+              <option value="الجغرافيا والدراسات البيئية">الجغرافيا والدراسات البيئية</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">عدد الصفحات (تقريبي)</label>
+            <input id="new-book-pages" type="number" value="120" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ملف الـ PDF (اختياري للمعاينة المباشرة)</label>
+          <input id="new-book-file" type="file" accept=".pdf,application/pdf" class="w-full text-xs text-slate-600 file:ml-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 border border-slate-200 rounded-xl p-1.5" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">أبواب أو وحدات الكتاب (افصل بين كل باب بفاصلة أو سطر جديد)</label>
+          <textarea id="new-book-chapters" rows="3" placeholder="الباب الأول: علوم القرآن&#10;الباب الثاني: الحديث والسنة&#10;الباب الثالث: السيرة النبوية" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm"></textarea>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeAddBookModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold">إضافة للمكتبة والخطة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 5: DEDICATED 100% FULL-SCREEN PDF & SUBJECT READER ==================== -->
+  <div id="fullscreen-reader-modal" class="fixed inset-0 w-screen h-screen z-[90] bg-slate-950 text-white hidden flex flex-col overflow-hidden">
+    <!-- Top Full-Screen Control Bar -->
+    <div class="bg-slate-900 border-b border-slate-800 px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span id="fs-reader-badge" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-extrabold shrink-0">شاشة كاملة</span>
+        <div class="truncate">
+          <h3 id="fs-reader-title" class="text-xs sm:text-sm font-extrabold text-white truncate">عنوان المادة / الكتاب</h3>
+          <p id="fs-reader-subtitle" class="text-[11px] text-slate-400 truncate"></p>
+        </div>
+      </div>
+
+      <!-- Center PDF Controls (Zoom, Page, Mode) -->
+      <div id="fs-pdf-controls" class="flex flex-wrap items-center gap-1.5 bg-slate-800/90 px-2.5 py-1 rounded-xl border border-slate-700">
+        <button onclick="changeFsPdfZoom(-0.2)" class="px-2 py-1 rounded-lg hover:bg-slate-700 text-xs font-bold transition" title="تصغير">
+          <span>تصغير −</span>
+        </button>
+        <span id="fs-zoom-label" class="text-xs font-extrabold text-amber-300 px-1.5">120%</span>
+        <button onclick="changeFsPdfZoom(0.2)" class="px-2 py-1 rounded-lg hover:bg-slate-700 text-xs font-bold transition" title="تكبير">
+          <span>تكبير +</span>
+        </button>
+        <span class="text-slate-600">|</span>
+        <button onclick="switchFsRenderMode()" id="fs-mode-toggle-btn" class="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold transition">
+          تبديل طريقة العرض
+        </button>
+      </div>
+
+      <!-- Right Action Buttons -->
+      <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+        <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
+          <input id="fs-attach-pdf-input" type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleFsAttachPdf(event)" />
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <span id="fs-attach-btn-text">إرفاق / تغيير PDF</span>
+        </label>
+
+        <button onclick="toggleFsChaptersSidebar()" id="fs-sidebar-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition">
+          فهرس الأبواب
+        </button>
+
+        <button onclick="openFsPdfInNewTab()" id="fs-newtab-btn" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition hidden">
+          فتح بنافذة مستقلة ↗
+        </button>
+
+        <button onclick="triggerBrowserNativeFullscreen()" class="px-2.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition" title="ملء شاشة الجهاز بالكامل">
+          ملء الشاشة ⛶
+        </button>
+
+        <button onclick="closeFullScreenReader()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold transition flex items-center gap-1">
+          <span>خروج ✕</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Full-Screen Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+      <!-- Collapsible Side Drawer for Chapters inside Full Screen -->
+      <aside id="fs-chapters-sidebar" class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0 hidden">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+          <h4 class="text-xs font-extrabold text-emerald-400">فهرس الأبواب ومتابعة الإنجاز</h4>
+          <button onclick="toggleFsChaptersSidebar()" class="text-xs text-slate-400 hover:text-white font-bold">إخفاء ×</button>
+        </div>
+        <div id="fs-chapters-list" class="p-3.5 space-y-2 overflow-y-auto flex-1 custom-scrollbar">
+          <!-- Populated dynamically -->
+        </div>
+      </aside>
+
+      <!-- Main 100% PDF Viewport -->
+      <div id="fs-pdf-viewport" class="flex-1 overflow-y-auto bg-slate-950 p-3 sm:p-6 flex flex-col items-center custom-scrollbar">
+        <!-- Populated dynamically with PDF.js canvases, Native iframe, or Attach Dropzone -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="fixed bottom-5 left-5 z-[100] space-y-2 pointer-events-none"></div>
+
+  <!-- Application Script -->
+  <script>
+    // Configure PDF.js worker if loaded
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    // ==================== SAFE STORAGE & INDEXEDDB PDF PERSISTENCE ====================
+    const STORAGE_KEY_COMPLETED = 'sudan_islamic_completed_chapters_v2';
+    const STORAGE_KEY_EXAMS = 'sudan_islamic_exams_v2';
+    const STORAGE_KEY_CUSTOM_BOOKS = 'sudan_islamic_custom_books_v2';
+    const IDB_NAME = 'SudanStudyDashboardPDFDB';
+    const IDB_STORE = 'pdfs';
+
+    function safeGetStorage(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function safeSetStorage(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        // Ignore storage quota or sandbox errors
+      }
+    }
+
+    function openPdfDB() {
+      return new Promise((resolve, reject) => {
+        try {
+          if (!window.indexedDB) {
+            resolve(null);
+            return;
+          }
+          const req = window.indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(IDB_STORE)) {
+              db.createObjectStore(IDB_STORE);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        } catch (err) {
+          resolve(null);
+        }
+      });
+    }
+
+    async function savePdfBlobToDB(key, fileBlob) {
+      try {
+        const db = await openPdfDB();
+        if (!db) return;
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(fileBlob, key);
+      } catch (e) {
+        // Ignore IDB errors in restricted environments
+      }
+    }
+
+    async function restorePdfsFromDB() {
+      try {
+        const db = await openPdfDB();
+        if (!db) return;
+        const tx = db.transaction(IDB_STORE, 'readonly');
+        const store = tx.objectStore(IDB_STORE);
+        const keysReq = store.getAllKeys();
+        keysReq.onsuccess = () => {
+          const keys = keysReq.result || [];
+          let loaded = 0;
+          if (keys.length === 0) return;
+          keys.forEach(k => {
+            const getReq = store.get(k);
+            getReq.onsuccess = () => {
+              const blob = getReq.result;
+              if (blob) {
+                const url = URL.createObjectURL(blob);
+                if (String(k).startsWith('exam:')) {
+                  const examId = String(k).replace('exam:', '');
+                  examBlobUrls[examId] = url;
+                  examFileObjects[examId] = blob;
+                } else if (String(k).startsWith('book:')) {
+                  const bookId = String(k).replace('book:', '');
+                  bookBlobUrls[bookId] = url;
+                  bookFileObjects[bookId] = blob;
+                }
+              }
+              loaded++;
+              if (loaded === keys.length) {
+                updateAllViews();
+              }
+            };
+          });
+        };
+      } catch (e) {
+        // Ignore IDB errors
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'success' ? 'bg-emerald-800 text-white border-emerald-600' : 'bg-indigo-900 text-white border-indigo-600';
+      toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-xs sm:text-sm font-bold flex items-center gap-2.5 animate-fade-in ${bgClass}`;
+      toast.innerHTML = `
+        <svg class="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3400);
+    }
+
+    // ==================== CORE DATA: THE 9 UPLOADED PDF TEXTBOOKS ====================
+    const INITIAL_BOOKS = [
+      {
+        id: 'book-islamic-ed',
+        title: 'كتاب التربية الإسلامية - الصف الثالث الثانوي',
+        fileName: 'كتاب التربية الإسلامية الصف الثالث الثانوي السودان.pdf',
+        subject: 'التربية الإسلامية',
+        category: 'مادة أساسية وتخصصية',
+        pages: 180,
+        year: 'الطبعة المعتمدة',
+        authors: 'المركز القومي للمناهج والبحث التربوي - السودان',
+        color: 'from-emerald-700 to-teal-900',
+        badgeColor: 'bg-emerald-100 text-emerald-800',
+        description: 'يشمل أحكام التجويد والمدود، سورة النور حفظاً وتفسيراً، آيات المواريث، سورة الفرقان والنحل، الفقه والعقيدة، خصائص الأمة الإسلامية، وأحاديث البخاري وابن ماجه.',
+        chapters: [
+          { id: 'isl-1', title: 'القسم الأول: التجويد والمدود (المد الفرعي، الحروف المقطعة في أوائل السور)', pages: 'ص 5 - 18', priority: 'عالية' },
+          { id: 'isl-2', title: 'سورة النور (للحفظ والتفسير): عقوبة الزنا، حكم القذف واللعان، حادثة الإفك (1 و2)', pages: 'ص 19 - 45', priority: 'عالية جداً' },
+          { id: 'isl-3', title: 'تابع سورة النور: آداب الزيارة والاستئذان، آية الحجاب، علاج الأزمات الاجتماعية، آية النور ودلائل القدرة', pages: 'ص 46 - 78', priority: 'عالية جداً' },
+          { id: 'isl-4', title: 'خواتيم سورة النور: صفات المنافق والمؤمن، الاستئذان داخل الأسرة، رفع الحرج، أدب الجماعة المؤمنة', pages: 'ص 79 - 98', priority: 'عالية' },
+          { id: 'isl-5', title: 'آيات مختارة للتفسير والفهم: آيات المواريث وأحكام الإرث، عباد الرحمن (الفرقان)، العدل والوفاء بالعهد (النحل)', pages: 'ص 99 - 125', priority: 'عالية جداً' },
+          { id: 'isl-6', title: 'أحكام فقهية وعقائدية عامة: أحكام النسل، الأيمان، النذور، الوقف، الدَّين', pages: 'ص 126 - 144', priority: 'متوسطة' },
+          { id: 'isl-7', title: 'الأمة الإسلامية وخصائصها (الربانية، الإنسانية، الشمول، الوسطية، الثبات والمرونة) والإسلام دين التوحيد', pages: 'ص 145 - 162', priority: 'عالية' },
+          { id: 'isl-8', title: 'الإيمان والعلم في كتب السنة: التعريف بصحيح البخاري وسنن ابن ماجه وأحاديث شعب الإيمان وفضل العلم', pages: 'ص 163 - 180', priority: 'عالية' }
+        ]
+      },
+      {
+        id: 'book-arabic-nahw',
+        title: 'كتاب قواعد النحو - الصف الثالث الثانوي',
+        fileName: 'كتاب قواعد النحو الصف الثالث الثانوي السودان  موقع المعلم التعليمي.pdf',
+        subject: 'اللغة العربية',
+        category: 'مادة أساسية - فرع النحو',
+        pages: 144,
+        year: '2009م',
+        authors: 'أ. عباس أحمد الريح، د. عبد النبي محمد علي، أ. عبد الله محمد الخير القاضي',
+        color: 'from-amber-700 to-orange-900',
+        badgeColor: 'bg-amber-100 text-amber-800',
+        description: 'يغطي المقرر الكامل لقواعد النحو والصرف لطلاب الشهادة السودانية مع التدريبات والشواهد الشعرية والقرآنية.',
+        chapters: [
+          { id: 'nahw-1', title: 'الباب الأول: الجمل وأشباه الجمل التي لها محل من الإعراب والتي لا محل لها', pages: 'ص 7 - 24', priority: 'عالية جداً' },
+          { id: 'nahw-2', title: 'الباب الثاني: أسلوب الشرط (أدوات الشرط الجازمة وغير الجازمة، اقتران الجواب بالفاء، جزم المضارع في جواب الطلب)', pages: 'ص 25 - 46', priority: 'عالية جداً' },
+          { id: 'nahw-3', title: 'الباب الثالث: النسب (أحكامه وتغييراته الصرفية)', pages: 'ص 47 - 58', priority: 'متوسطة' },
+          { id: 'nahw-4', title: 'الباب الرابع: الجامد والمشتق (اسم الفاعل، صيغ المبالغة، اسم المفعول، الصفة المشبهة)', pages: 'ص 59 - 84', priority: 'عالية جداً' },
+          { id: 'nahw-5', title: 'تابع المشتقات: أسلوب التعجب، اسم التفضيل، اسما الزمان والمكان، اسم الآلة', pages: 'ص 85 - 104', priority: 'عالية' },
+          { id: 'nahw-6', title: 'الباب الخامس: جمع التكسير (جموع القلة والكثرة) وأفعال المدح والذم (نعم وبئس وحبذا)', pages: 'ص 105 - 120', priority: 'عالية' },
+          { id: 'nahw-7', title: 'الباب السادس: الإضافة، مواضع كسر همزة إنّ، بعض حروف المعاني (من، اللام، الباء، عن، على)، والأخطاء الشائعة', pages: 'ص 121 - 144', priority: 'عالية' }
+        ]
+      },
+      {
+        id: 'book-arabic-balagha',
+        title: 'كتاب البلاغة والتعبير - الصف الثالث الثانوي',
+        fileName: 'كتاب البلاغة والتعبير الصف الثالث الثانوي السودان  موقع المعلم التعليمي.pdf',
+        subject: 'اللغة العربية',
+        category: 'مادة أساسية - فرع البلاغة',
+        pages: 103,
+        year: '2009م',
+        authors: 'أ. عباس أحمد الريح، د. فاروق الطيب البشير',
+        color: 'from-yellow-700 to-amber-900',
+        badgeColor: 'bg-amber-100 text-amber-800',
+        description: 'مقرر علوم البلاغة الثلاثة (علم البيان، علم المعاني، المحسنات البديعية) بالإضافة إلى مختارات أدبية رفيعة.',
+        chapters: [
+          { id: 'bal-1', title: 'الباب الأول: مراجعة علم البيان (التشبيه وأنواعه وقيمته الفنية، الاستعارة وبلاغتها، المجاز المرسل، الكناية)', pages: 'ص 5 - 32', priority: 'عالية جداً' },
+          { id: 'bal-2', title: 'الباب الثاني: علم المعاني (الجملة، الحذف والذكر، التقديم والتأخير، أسلوب القصر الحقيقي والإضافي)', pages: 'ص 33 - 64', priority: 'عالية جداً' },
+          { id: 'bal-3', title: 'الباب الثالث: المحسنات البديعية (التورية، حسن التعليل، تأكيد المدح بما يشبه الذم وعكسه، المبالغة)', pages: 'ص 65 - 82', priority: 'عالية' },
+          { id: 'bal-4', title: 'الباب الرابع: مختارات للاطلاع والتذوق (أبي فراس، بشارة الخوري، التجاني يوسف بشير، ابن زريق، المعري)', pages: 'ص 83 - 103', priority: 'متوسطة' }
+        ]
+      },
+      {
+        id: 'book-arabic-adab',
+        title: 'كتاب المطالعة والأدب - الصف الثالث الثانوي',
+        fileName: 'كتاب المطالعة والأدب الصف الثالث الثانوي السودان.pdf',
+        subject: 'اللغة العربية',
+        category: 'مادة أساسية - فرع الأدب والمطالعة',
+        pages: 196,
+        year: '2009م',
+        authors: 'نخبة من أساتذة اللغة العربية - السودان',
+        color: 'from-rose-700 to-red-900',
+        badgeColor: 'bg-rose-100 text-rose-800',
+        description: 'يضم قسم المطالعة الفكرية والأدبية، وقسم تاريخ الأدب العربي في العصر العباسي والحديث ومدارس الشعر والأدب السوداني.',
+        chapters: [
+          { id: 'adab-1', title: 'القسم الأول (المطالعة 1): سورة الحجرات، خطبة الصديق، عمر وعجوز، في الغزل، أثر الحضارة الإسلامية، أمثال عربية', pages: 'ص 7 - 48', priority: 'عالية' },
+          { id: 'adab-2', title: 'القسم الأول (المطالعة 2): لو تراحم الناس (المنفلوطي)، الصغيران (الرافعي)، المحجوب، غرناطة، مستقبل الثقافة (عبد الله الطيب)', pages: 'ص 49 - 96', priority: 'عالية' },
+          { id: 'adab-3', title: 'الأدب في العصر العباسي: الحياة السياسية والفكرية، خصائص الشعر والنثر، المتنبي، المعري، الجاحظ، ابن المقفع، الهمذاني', pages: 'ص 97 - 134', priority: 'عالية جداً' },
+          { id: 'adab-4', title: 'الأدب العربي الحديث: عوامل النهضة، فنون النثر (المقالة، القصة، المسرحية)، ومدارس الشعر (الإحياء، الديوان، أبولو، المهجر، الشعر الحر)', pages: 'ص 135 - 168', priority: 'عالية جداً' },
+          { id: 'adab-5', title: 'الأدب في السودان: الشعر السوداني (خليل فرح، التجاني، جماع، القرشي، صلاح أحمد إبراهيم، مصطفى سند) والفنون النثرية', pages: 'ص 169 - 196', priority: 'عالية جداً' }
+        ]
+      },
+      {
+        id: 'book-arabic-special',
+        title: 'اللغة العربية الخاصة (الدراسات الإسلامية والأدبية) - ثالث ثانوي',
+        fileName: 'اللغة العربية الخاصة - ثالث ثانوي - السودان - (1).pdf',
+        subject: 'الدراسات الإسلامية والعربية المتقدمة',
+        category: 'تخصص الدراسات الإسلامية والمساق الأدبي',
+        pages: 209,
+        year: '1429هـ / 2008م',
+        authors: 'د. نعيم أحمد نعيم',
+        color: 'from-teal-700 to-emerald-950',
+        badgeColor: 'bg-teal-100 text-teal-800',
+        description: 'كتاب تطبيقات القراءة والأدب والنحو والإملاء والمعاجم مع نصوص مختارة ونموذج امتحان كامل في نهاية الكتاب.',
+        chapters: [
+          { id: 'sp-1', title: 'الوحدة الأولى (الدروس 1 - 6): مراجعة، رسالة إلى ولدي (كان وأخواتها)، بلدي الحبيب (الألف اللينة)، الماء حياة (إن وأخواتها)، شعر الحكمة (المفعول المطلق)', pages: 'ص 5 - 52', priority: 'عالية' },
+          { id: 'sp-2', title: 'الوحدة الثانية (الدروس 7 - 12): الطباعة (الترقيم والنعت)، الأصدقاء (المفعول لأجله)، الرحمة للمنفلوطي (التاء المفتوحة والمفعول فيه)، الملك والحارس (الحال)', pages: 'ص 53 - 104', priority: 'عالية' },
+          { id: 'sp-3', title: 'الوحدة الثالثة (الدروس 13 - 18): تعليم المرأة في السودان (جمع المؤنث)، ابنة اليوم (الضمير المتصل)، البن (الإضافة)، وطن النجوم لإيليا أبي ماضي', pages: 'ص 105 - 154', priority: 'عالية' },
+          { id: 'sp-4', title: 'الوحدة الرابعة (الدروس 19 - 25): أسلوب الاستثناء، أدوات الشرط، الجهاز الصوتي (المنادى)، الكشف في المعجم، والامتحان النموذجي الشامل', pages: 'ص 155 - 209', priority: 'عالية جداً' }
+        ]
+      },
+      {
+        id: 'book-history',
+        title: 'كتاب التاريخ - الصف الثالث الثانوي',
+        fileName: 'كتاب التاريخ الصف الثالث الثانوي السودان  موقع المعلم التعليمي.pdf',
+        subject: 'التاريخ',
+        category: 'مادة تخصصية للمساق الأدبي',
+        pages: 276,
+        year: '2009م (الطبعة المنقحة)',
+        authors: 'لجنة التاريخ بالمركز القومي للمناهج',
+        color: 'from-stone-700 to-amber-950',
+        badgeColor: 'bg-orange-100 text-orange-900',
+        description: 'يتناول تاريخ السودان الحديث (الدولة المهدية والحكم الثنائي والحركة الوطنية) وتاريخ الدولة العثمانية وحركات التحرر العربية.',
+        chapters: [
+          { id: 'hist-1', title: 'الوحدة الأولى: الثورة والدولة المهدية في السودان (1881 - 1899م): الأسباب، تحرير الأبيض والخرطوم، هكس، عثمان دقنة، عهد الخليفة ونظم الحكم', pages: 'ص 7 - 78', priority: 'عالية جداً' },
+          { id: 'hist-2', title: 'الوحدة الثانية: الحكم الثنائي والحركة الوطنية (1899 - 1953م): اتفاقية 1899، سياسة الجنوب، مؤتمر الخريجين، الأحزاب، واتفاقية الحكم الذاتي 1953م', pages: 'ص 79 - 148', priority: 'عالية جداً' },
+          { id: 'hist-3', title: 'الوحدة الثالثة: دولة الخلافة العثمانية والأطماع الاستعمارية وحركات الإصلاح (الوهابية، السنوسية، العرابية، الأفغاني، الكواكبي)', pages: 'ص 149 - 206', priority: 'عالية' },
+          { id: 'hist-4', title: 'الوحدة الرابعة: حركات التحرر العربية (1920 - 1945م) في مصر، العراق، السعودية، الشام، المغرب، والقضية الفلسطينية + ملاحق الوثائق', pages: 'ص 207 - 276', priority: 'عالية جداً' }
+        ]
+      },
+      {
+        id: 'book-geography',
+        title: 'كتاب الجغرافيا والدراسات البيئية - الثالث الثانوي',
+        fileName: 'كتاب الجغرافيا الصف الثالث الثانوي السودان  موقع المعلم التعليمي.pdf',
+        subject: 'الجغرافيا والدراسات البيئية',
+        category: 'مادة تخصصية للمساق الأدبي',
+        pages: 230,
+        year: '2009م',
+        authors: 'لجنة الجغرافيا بالمركز القومي للمناهج',
+        color: 'from-cyan-700 to-blue-900',
+        badgeColor: 'bg-cyan-100 text-cyan-800',
+        description: 'يشمل قراءة وتفسير الصور الجوية والفضائية والاستشعار عن بعد، الجغرافيا الاقتصادية العالمية، ومشكلات الإنسان والبيئة.',
+        chapters: [
+          { id: 'geo-1', title: 'الباب الأول: مقدمة في قراءة وتفسير الصور الجوية والفضائية (الاستشعار عن بعد، مقارنة الصور الجوية والفضائية)', pages: 'ص 5 - 38', priority: 'عالية جداً' },
+          { id: 'geo-2', title: 'الباب الثاني (1): الجغرافيا الاقتصادية - الإنتاج الزراعي (الأرز، القمح، القطن)، إنتاج الغابات، الإنتاج الحيواني والأسماك', pages: 'ص 39 - 98', priority: 'عالية جداً' },
+          { id: 'geo-3', title: 'الباب الثاني (2): الإنتاج المعدني (الحديد، النحاس، الألمنيوم)، مصادر الطاقة، الأقاليم الصناعية، السياحة، النقل والتكتلات الاقتصادية والعولمة', pages: 'ص 99 - 162', priority: 'عالية' },
+          { id: 'geo-4', title: 'الباب الثالث: الإنسان والبيئة - مشكلات عالمية (التوازن البيئي، التلوث، الأمن الغذائي والمائي، الكوارث، التنمية المستدامة، مشكلات المدن)', pages: 'ص 163 - 230', priority: 'عالية جداً' }
+        ]
+      },
+      {
+        id: 'book-english',
+        title: 'كتاب اللغة الإنجليزية (SPINE 6: Pupil\'s Book)',
+        fileName: 'كتاب اللغة الانجليزية الصف الثالث الثانوي السودان  موقع المعلم التعليمي.pdf',
+        subject: 'اللغة الإنجليزية',
+        category: 'مادة أساسية',
+        pages: 178,
+        year: 'SPINE Series',
+        authors: 'Sudan Practical Integrated National English',
+        color: 'from-indigo-700 to-slate-900',
+        badgeColor: 'bg-indigo-100 text-indigo-800',
+        description: 'الكتاب الرسمي المقرر للغة الإنجليزية للصف الثالث الثانوي (10 وحدات تشمل القراءة، القواعد Grammar، المفردات، والتعبير Writing).',
+        chapters: [
+          { id: 'eng-1', title: 'Chapters 1 & 2: Trees (Gum Arabic, Passive, Tenses) & Young People Today (Prefixes, Indirect Questions, Present Perfect)', pages: 'p. 1 - 36', priority: 'عالية جداً' },
+          { id: 'eng-2', title: 'Chapters 3 & 4: Doing the Right Thing (Martin Luther King, Comparisons) & Education (Girls\' Education, Countable/Uncountable)', pages: 'p. 37 - 72', priority: 'عالية' },
+          { id: 'eng-3', title: 'Chapters 5 & 6: Women\'s Participation (Gerund, Past Perfect) & Food and Nutrition (Sudanese Habits, Relative Pronouns)', pages: 'p. 73 - 108', priority: 'عالية جداً' },
+          { id: 'eng-4', title: 'Chapters 7 & 8: Development (Kenana Sugar Project, Phrasal Verbs) & A World of Difference (Quantifiers, Present Perfect Continuous)', pages: 'p. 109 - 144', priority: 'عالية' },
+          { id: 'eng-5', title: 'Chapters 9 & 10: Agatha Christie (Few/Little, Make/Let, Conjunctions) & Science in Action (Alternative Energy, Prepositions)', pages: 'p. 145 - 178', priority: 'عالية' }
+        ]
+      },
+      {
+        id: 'book-math',
+        title: 'كتاب الرياضيات الأساسية - الثالث الثانوي (المساق الأدبي)',
+        fileName: 'الرياضيات الأساسية - ثالث ثانوي - السودان (1).pdf',
+        subject: 'الرياضيات الأساسية',
+        category: 'مادة أساسية للمساق الأدبي',
+        pages: 164,
+        year: 'أكتوبر 2009م',
+        authors: 'المركز القومي للمناهج والبحث التربوي',
+        color: 'from-purple-700 to-indigo-950',
+        badgeColor: 'bg-purple-100 text-purple-800',
+        description: 'مقرر الرياضيات الأساسية المخصص لطلاب المساق الأدبي والدراسات الإسلامية (الدوال، التفاضل، التكامل، الإحصاء، الاحتمالات، المصفوفات).',
+        chapters: [
+          { id: 'math-1', title: 'الوحدة الأولى: الدوال الحقيقية والنهايات (العمليات على الدوال، نهايات الدوال الكسرية والمثلثية)', pages: 'ص 5 - 38', priority: 'عالية جداً' },
+          { id: 'math-2', title: 'الوحدة الثانية: التفاضل (متوسط معدل التغير، المشتقة من المبادئ الأولية، قواعد التفاضل، الضمني، المشتقات العليا والمماس)', pages: 'ص 39 - 78', priority: 'عالية جداً' },
+          { id: 'math-3', title: 'الوحدة الثالثة: التكامل (التكامل غير المحدد والمحدد لكثيرات الحدود والدوال المثلثية)', pages: 'ص 79 - 98', priority: 'عالية' },
+          { id: 'math-4', title: 'الوحدة الرابعة: الإحصاء (مقاييس النزعة المركزية: الوسط، الوسيط، المنوال، ومقاييس التشتت والانحراف المعياري)', pages: 'ص 99 - 126', priority: 'عالية' },
+          { id: 'math-5', title: 'الوحدة الخامسة والسادسة: نظرية الاحتمالات (فضاء العينة والحوادث) + المصفوفات (الجمع، الطرح، المنقول، تساوي المصفوفات)', pages: 'ص 127 - 164', priority: 'عالية جداً' }
+        ]
+      }
+    ];
+
+    // ==================== INITIAL EXAMS DATA ====================
+    const INITIAL_EXAMS = [
+      {
+        id: 'exam-1',
+        title: 'الامتحان النموذجي الشامل - اللغة العربية والدراسات الإسلامية',
+        subject: 'الدراسات الإسلامية والعربية المتقدمة',
+        year: 'نموذج الكتاب المقرر (ص 198)',
+        duration: '3 ساعات',
+        marks: 100,
+        pinned: true,
+        solved: false,
+        notes: 'مستخرج من كتاب اللغة العربية الخاصة (د. نعيم أحمد نعيم) - يشمل القراءة، الأدب، النحو، الصرف، والمعاجم.',
+        sampleQuestions: [
+          'السؤال الأول (القرآن والتفسير): اكتب من قوله تعالى في سورة النور (الله نور السماوات والأرض...) إلى قوله (والله يرزق من يشاء بغير حساب) مع بيان معاني المفردات وأحكام المدود.',
+          'السؤال الثاني (النحو والصرف): استخرج من النص جملة لها محل من الإعراب، وأسلوب شرط وبين أركانه، واسم فاعل عامل، ثم أعرب ما تحته خط.',
+          'السؤال الثالث (البلاغة والأدب): ميز بين التشبيه الضمني والتمثيلي، وتحدث عن خصائص مدرسة الإحياء والبعث وأثر التجاني يوسف بشير في الشعر السوداني.',
+          'السؤال الرابع (المعاجم والإملاء): كيف تكشف في المعجم الوجيز عن الكلمات: (استقام - اتّحاد - سماء - هبة)؟ وعلل رسم الهمزة والتاء.'
+        ]
+      },
+      {
+        id: 'exam-2',
+        title: 'امتحان الشهادة السودانية التجريبي - التربية الإسلامية',
+        subject: 'التربية الإسلامية',
+        year: 'نموذج شهادة سودانية',
+        duration: '2.5 ساعة',
+        marks: 100,
+        pinned: true,
+        solved: false,
+        notes: 'يركز على أحكام التجويد، سورة النور، مسائل المواريث التطبيقية، التوحيد، وأحاديث صحيح البخاري.',
+        sampleQuestions: [
+          'أولاً (التجويد): ما الفرق بين المد المتصل والمد المنفصل والمد اللازم؟ مثّل لكلٍّ بآية من المقرر.',
+          'ثانياً (المواريث): توفي رجل وترك زوجة، وأماً، وبنتاً، وأخاً شقيقاً. بيّن نصيب كل وارث مع التعليل.',
+          'ثالثاً (الفقه والعقيدة): قارن بين اليمين المنعقدة واليمين الغموس، واذكر شروط صحة الوقف وخصائص الأمة الإسلامية.'
+        ]
+      },
+      {
+        id: 'exam-3',
+        title: 'امتحان الشهادة السودانية - التاريخ (المساق الأدبي)',
+        subject: 'التاريخ',
+        year: 'نموذج شهادة سودانية',
+        duration: '3 ساعات',
+        marks: 100,
+        pinned: true,
+        solved: false,
+        notes: 'مقالات وأسئلة موضوعية في الدولة المهدية، الحكم الثنائي، الخلافة العثمانية، وحركات التحرر العربية.',
+        sampleQuestions: [
+          'القسم الأول: اكتب مقالاً تاريخياً عن عوامل قيام الثورة المهدية ومعركة شيكان (حملة هكس 1883م).',
+          'القسم الثاني: ناقش بنود اتفاقية الحكم الثنائي 1899م، ودور مؤتمر الخريجين العام في الحركة الوطنية السودانية.',
+          'القسم الثالث: تحدث عن حركة الإصلاح السنوسية والوهابية، وثورة 1936م الكبرى في فلسطين.'
+        ]
+      },
+      {
+        id: 'exam-4',
+        title: 'امتحان الجغرافيا والدراسات البيئية الشامل',
+        subject: 'الجغرافيا والدراسات البيئية',
+        year: 'نموذج شهادة سودانية',
+        duration: '3 ساعات',
+        marks: 100,
+        pinned: true,
+        solved: false,
+        notes: 'يشمل مسائل مقياس رسم الصورة الجوية، خرائط الإنتاج الزراعي والمعدني، ومشكلات التلوث البيئي.',
+        sampleQuestions: [
+          'س1 (الصور الجوية): طائرة التقطت صورة جوية من ارتفاع 3000 متر ببعد بؤري 15 سم. احسب مقياس رسم الصورة الجوية، وقارن بين الصور الرأسية والمائلة.',
+          'س2 (الجغرافيا الاقتصادية): ما هي الشروط الجغرافية لزراعة القمح والقطن؟ وما أهم الأقاليم الصناعية الكبرى في العالم؟',
+          'س3 (البيئة): اشرح مفهوم التنمية المستدامة، وأثر الاحتباس الحراري وتلوث المياه على الأمن الغذائي.'
+        ]
+      },
+      {
+        id: 'exam-5',
+        title: 'امتحان الرياضيات الأساسية واللغة الإنجليزية (SPINE 6)',
+        subject: 'الرياضيات الأساسية',
+        year: 'مراجعة نهائية للأدبي',
+        duration: '3 ساعات',
+        marks: 100,
+        pinned: false,
+        solved: false,
+        notes: 'تطبيقات النهايات، التفاضل، التكامل، الانحراف المعياري، الاحتمالات، والمصفوفات.',
+        sampleQuestions: [
+          'س1: أوجد نهاية الدالة (س² - 9) / (س - 3) عندما س تؤول إلى 3، وأوجد المشتقة الأولى للدالة ص = س³ + 4س² - 5.',
+          'س2: احسب التكامل غير المحدد لـ (3س² + جتا س) دس، وأوجد الوسط الحسابي والوسيط للبيانات المعطاة.',
+          'س3: إذا كانت أ، ب مصفوفتين من الرتبة 2×2، أوجد (أ + ب) ومنقول المصفوفة أ.'
+        ]
+      }
+    ];
+
+    const WEEKLY_SCHEDULE = [
+      {
+        day: 'السبت',
+        morning: 'التربية الإسلامية (حفظ وتفسير سورة النور + التجويد)',
+        afternoon: 'التاريخ (الوحدة الأولى: الدولة المهدية)',
+        evening: 'اللغة العربية - قواعد النحو (الجمل وأسلوب الشرط) + حل امتحان قصير'
+      },
+      {
+        day: 'الأحد',
+        morning: 'الدراسات الإسلامية والعربية الخاصة (نصوص وقواعد وتطبيقات)',
+        afternoon: 'الجغرافيا (الصور الجوية والفضائية + مسائل مقياس الرسم)',
+        evening: 'الرياضيات الأساسية (الدوال الحقيقية والنهايات)'
+      },
+      {
+        day: 'الاثنين',
+        morning: 'التربية الإسلامية (آيات المواريث وأحكام الفقه والعقيدة)',
+        afternoon: 'اللغة العربية - المطالعة والأدب (العصر العباسي والمتنبي)',
+        evening: 'اللغة الإنجليزية SPINE 6 (Chapters 1-3 + Grammar)'
+      },
+      {
+        day: 'الثلاثاء',
+        morning: 'اللغة العربية - البلاغة (علم البيان وعلم المعاني)',
+        afternoon: 'التاريخ (الحكم الثنائي والحركة الوطنية السودانية)',
+        evening: 'الرياضيات الأساسية (التفاضل والتكامل وتطبيقاتهما)'
+      },
+      {
+        day: 'الأربعاء',
+        morning: 'التربية الإسلامية (خصائص الأمة الإسلامية + أحاديث البخاري وابن ماجه)',
+        afternoon: 'الجغرافيا الاقتصادية (الزراعة، المعادن، الطاقة، والصناعة)',
+        evening: 'اللغة العربية - النحو (المشتقات، الإضافة، وحروف المعاني)'
+      },
+      {
+        day: 'الخميس',
+        morning: 'اللغة العربية - الأدب الحديث والأدب السوداني (خليل فرح والتجاني)',
+        afternoon: 'التاريخ (الدولة العثمانية وحركات التحرر العربية) + الجغرافيا البيئية',
+        evening: 'الرياضيات الأساسية (الإحصاء والاحتمالات والمصفوفات) + English SPINE'
+      },
+      {
+        day: 'الجمعة',
+        morning: 'مراجعة شاملة للمحفوظات (سورة النور + الشواهد الشعرية والأدبية)',
+        afternoon: 'حل امتحان شهادة سودانية كامل (PDF) من قسم الامتحانات بالزمن الرسمي',
+        evening: 'تقييم الأسبوع وتحديث الأبواب المنجزة في الداش بورد'
+      }
+    ];
+
+    // ==================== RUNTIME STATE ====================
+    let completedChapters = safeGetStorage(STORAGE_KEY_COMPLETED, ['isl-1', 'nahw-1', 'bal-1', 'hist-1']);
+    let customBooks = safeGetStorage(STORAGE_KEY_CUSTOM_BOOKS, []);
+    let examsList = safeGetStorage(STORAGE_KEY_EXAMS, INITIAL_EXAMS);
+
+    // In-memory Blob URLs & File/Blob objects for attached PDFs
+    const bookBlobUrls = {};
+    const bookFileObjects = {};
+    const examBlobUrls = {};
+    const examFileObjects = {};
+
+    let activeSubjectFilter = 'all';
+    let currentOpenBookId = null;
+    let currentOpenExamId = null;
+
+    // Full-screen viewer state
+    let fsTargetType = null; // 'book' | 'exam'
+    let fsTargetId = null;
+    let fsZoomScale = 1.25;
+    let fsUseCanvasMode = true; // true = PDF.js high-DPI canvas, false = native iframe/embed
+
+    function getAllBooks() {
+      return [...INITIAL_BOOKS, ...customBooks];
+    }
+
+    // ==================== NAVIGATION ====================
+    function switchTab(tabId) {
+      const views = ['dashboard', 'plan', 'books', 'exams', 'schedule'];
+      views.forEach(v => {
+        const section = document.getElementById(`view-${v}`);
+        const btn = document.getElementById(`tab-${v}`);
+        if (v === tabId) {
+          section.classList.remove('hidden');
+          btn.classList.add('active');
+        } else {
+          section.classList.add('hidden');
+          btn.classList.remove('active');
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==================== RENDER DASHBOARD & KPIS ====================
+    function updateAllViews() {
+      const allBooks = getAllBooks();
+      const allChapters = allBooks.flatMap(b => b.chapters.map(ch => ({ ...ch, bookTitle: b.title, subject: b.subject })));
+      const totalChapters = allChapters.length;
+      const doneCount = allChapters.filter(c => completedChapters.includes(c.id)).length;
+      const pct = totalChapters > 0 ? Math.round((doneCount / totalChapters) * 100) : 0;
+
+      // Update KPIs
+      document.getElementById('kpi-progress-pct').textContent = `${pct}%`;
+      document.getElementById('kpi-progress-bar').style.width = `${pct}%`;
+      document.getElementById('kpi-chapters-count').textContent = `${doneCount} من ${totalChapters} باب/وحدة مكتملة`;
+
+      const totalPages = allBooks.reduce((acc, b) => acc + (Number(b.pages) || 0), 0);
+      const attachedBooksCount = allBooks.filter(b => Boolean(bookBlobUrls[b.id])).length;
+      document.getElementById('kpi-books-total').textContent = `${allBooks.length} كتب`;
+      document.getElementById('kpi-books-pages').textContent = `إجمالي ${totalPages.toLocaleString('ar-EG')} صفحة • ${attachedBooksCount} PDF مرفق`;
+      document.getElementById('nav-books-count').textContent = allBooks.length;
+
+      const attachedCounter = document.getElementById('dashboard-attached-counter');
+      if (attachedCounter) {
+        attachedCounter.textContent = `${attachedBooksCount} / ${allBooks.length} ملفات PDF مرفقة`;
+        attachedCounter.className = attachedBooksCount > 0
+          ? 'px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-600 text-white'
+          : 'px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-800';
+      }
+
+      const solvedExams = examsList.filter(e => e.solved).length;
+      const pinnedExams = examsList.filter(e => e.pinned).length;
+      document.getElementById('kpi-exams-total').textContent = `${examsList.length} امتحانات`;
+      document.getElementById('kpi-exams-solved').textContent = `${solvedExams} محلول • ${pinnedExams} معروض بالداش بورد`;
+      document.getElementById('nav-exams-count').textContent = examsList.length;
+
+      renderDashboardExams();
+      renderDashboardBooks();
+      renderDashboardSubjectsProgress();
+      renderSubjectFilterPills();
+      renderStudyPlan();
+      renderBooksLibrary();
+      renderExamsCenter();
+      renderWeeklySchedule();
+    }
+
+    function renderDashboardExams() {
+      const container = document.getElementById('dashboard-exams-list');
+      const pinned = examsList.filter(e => e.pinned);
+
+      if (pinned.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 px-4 rounded-xl bg-slate-50 border border-slate-200/70">
+            <p class="text-xs font-bold text-slate-600">لا توجد امتحانات مثبتة حالياً في الداش بورد</p>
+            <button onclick="openUploadExamModal()" class="mt-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold">
+              + ارفع امتحان PDF الآن
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pinned.map(exam => {
+        const hasPdf = Boolean(examBlobUrls[exam.id]);
+        return `
+          <div class="p-3.5 rounded-xl border ${exam.solved ? 'border-emerald-200 bg-emerald-50/40' : 'border-slate-200 bg-white'} hover:border-indigo-300 transition shadow-2xs flex flex-col gap-2.5">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700">${exam.subject}</span>
+                  <span class="text-[11px] text-slate-400 font-medium">${exam.year}</span>
+                  ${hasPdf ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">✓ PDF مرفق</span>' : ''}
+                </div>
+                <h4 class="text-xs sm:text-sm font-extrabold text-slate-800 mt-1 leading-snug">${exam.title}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${exam.solved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${exam.solved ? 'تم الحل ✓' : 'جاهز للحل'}
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+              <span>الزمن: ${exam.duration} • الدرجة: ${exam.marks}</span>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="openFullScreenExam('${exam.id}')" class="px-2.5 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold transition flex items-center gap-1" title="فتح الامتحان شاشة كاملة">
+                  <span>شاشة كاملة ⛶</span>
+                </button>
+                <label class="cursor-pointer px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold transition">
+                  <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToExamById(event, '${exam.id}')" />
+                  <span>${hasPdf ? 'تحديث PDF' : 'إرفاق PDF'}</span>
+                </label>
+                <button onclick="openExamViewerModal('${exam.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition">
+                  ${hasPdf ? 'فتح الـ PDF' : 'عرض الامتحان'}
+                </button>
+                <button onclick="toggleExamSolved('${exam.id}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition" title="تغيير حالة الحل">
+                  ${exam.solved ? 'إلغاء الحل' : 'تحديد كمحلول'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDashboardBooks() {
+      const container = document.getElementById('dashboard-books-grid');
+      const allBooks = getAllBooks();
+
+      container.innerHTML = allBooks.map(book => {
+        const doneInBook = book.chapters.filter(c => completedChapters.includes(c.id)).length;
+        const totalInBook = book.chapters.length;
+        const pct = totalInBook > 0 ? Math.round((doneInBook / totalInBook) * 100) : 0;
+        const hasPdf = Boolean(bookBlobUrls[book.id]);
+
+        return `
+          <div class="group rounded-xl border ${hasPdf ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200/90 bg-white'} hover:border-emerald-500 transition p-3.5 flex flex-col justify-between shadow-2xs">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold ${book.badgeColor || 'bg-emerald-100 text-emerald-800'}">
+                  ${book.subject}
+                </span>
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold ${hasPdf ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-800'}">
+                    ${hasPdf ? '✓ PDF مرفق' : 'إرفاق PDF'}
+                  </span>
+                  <span class="text-[11px] font-bold text-slate-400">${book.pages} ص</span>
+                </div>
+              </div>
+              <h4 class="text-xs sm:text-sm font-extrabold text-slate-800 mt-2 group-hover:text-emerald-800 transition line-clamp-1">${book.title}</h4>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-1">${book.chapters.length} أبواب/وحدات • ${book.authors}</p>
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-100">
+              <div class="flex items-center justify-between text-[11px] mb-1">
+                <span class="text-slate-500 font-medium">إنجاز الكتاب: ${doneInBook}/${totalInBook}</span>
+                <span class="font-extrabold text-emerald-700">${pct}%</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-2.5">
+                <div class="bg-emerald-600 h-full rounded-full" style="width: ${pct}%"></div>
+              </div>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button onclick="openFullScreenBook('${book.id}')" class="py-1.5 px-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-extrabold transition text-center flex items-center justify-center gap-1 shadow-2xs" title="فتح الكتاب في شاشة كاملة">
+                  <span>شاشة كاملة ⛶</span>
+                </button>
+                <label class="cursor-pointer py-1.5 px-2 rounded-lg ${hasPdf ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'} text-[11px] font-bold transition text-center flex items-center justify-center">
+                  <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToBookById(event, '${book.id}')" />
+                  <span>${hasPdf ? 'تغيير PDF' : 'إرفاق PDF'}</span>
+                </label>
+                <button onclick="openBookReaderModal('${book.id}')" class="py-1.5 px-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold transition text-center">
+                  ${hasPdf ? 'قراءة الـ PDF والأبواب' : 'تصفح الأبواب والـ PDF'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDashboardSubjectsProgress() {
+      const container = document.getElementById('dashboard-subjects-progress');
+      const allBooks = getAllBooks();
+      const subjectsMap = {};
+
+      allBooks.forEach(b => {
+        if (!subjectsMap[b.subject]) {
+          subjectsMap[b.subject] = {
+            subject: b.subject,
+            books: [],
+            booksCount: 0,
+            totalChapters: 0,
+            doneChapters: 0
+          };
+        }
+        subjectsMap[b.subject].books.push(b);
+        subjectsMap[b.subject].booksCount += 1;
+        subjectsMap[b.subject].totalChapters += b.chapters.length;
+        subjectsMap[b.subject].doneChapters += b.chapters.filter(c => completedChapters.includes(c.id)).length;
+      });
+
+      container.innerHTML = Object.values(subjectsMap).map(item => {
+        const pct = item.totalChapters > 0 ? Math.round((item.doneChapters / item.totalChapters) * 100) : 0;
+        const attachedInSubject = item.books.filter(b => Boolean(bookBlobUrls[b.id])).length;
+        const primaryBook = item.books[0];
+
+        return `
+          <div class="p-4 rounded-2xl border border-slate-200 hover:border-emerald-400 bg-slate-50/70 hover:bg-white transition flex flex-col justify-between gap-3 shadow-2xs">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <h4 onclick="filterPlanBySubject('${item.subject}')" class="cursor-pointer text-xs sm:text-sm font-extrabold text-slate-800 hover:text-emerald-700">${item.subject}</h4>
+                <div class="flex items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${attachedInSubject === item.booksCount ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                    PDF: ${attachedInSubject}/${item.booksCount}
+                  </span>
+                  <span class="text-xs font-extrabold text-emerald-700">${pct}%</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">${item.booksCount} كتاب مقرر • ${item.doneChapters} من ${item.totalChapters} باب مكتمل</p>
+              <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden mt-2">
+                <div class="bg-emerald-600 h-full rounded-full transition-all" style="width: ${pct}%"></div>
+              </div>
+
+              <!-- Books of this Subject with Direct PDF Attach & Full Screen Open -->
+              <div class="mt-3 space-y-1.5 pt-2.5 border-t border-slate-200/70">
+                ${item.books.map(book => {
+                  const hasPdf = Boolean(bookBlobUrls[book.id]);
+                  return `
+                    <div class="flex items-center justify-between gap-1.5 bg-white p-2 rounded-xl border ${hasPdf ? 'border-emerald-300' : 'border-slate-200'}">
+                      <div class="min-w-0 flex-1">
+                        <p class="text-[11px] font-extrabold text-slate-800 truncate" title="${book.title}">${book.title}</p>
+                        <p class="text-[10px] ${hasPdf ? 'text-emerald-700 font-bold' : 'text-slate-400'}">${hasPdf ? '✓ ملف الـ PDF جاهز للفتح' : `${book.pages} صفحة • أرفق الـ PDF`}</p>
+                      </div>
+                      <div class="flex items-center gap-1 shrink-0">
+                        <label class="cursor-pointer px-2 py-1 rounded-lg ${hasPdf ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'} text-[10px] font-extrabold transition" title="إرفاق ملف PDF لهذه المادة">
+                          <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToBookById(event, '${book.id}')" />
+                          <span>${hasPdf ? 'تغيير PDF' : 'إرفاق PDF'}</span>
+                        </label>
+                        <button onclick="openFullScreenBook('${book.id}')" class="px-2 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[10px] font-extrabold transition" title="فتح الكتاب شاشة كاملة">
+                          شاشة كاملة ⛶
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1">
+              <button onclick="openFullScreenBook('${primaryBook.id}')" class="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold transition text-center">
+                فتح المادة شاشة كاملة ⛶
+              </button>
+              <button onclick="filterPlanBySubject('${item.subject}')" class="py-1.5 px-2.5 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-700 text-[11px] font-bold transition">
+                خطة الأبواب ←
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterPlanBySubject(subject) {
+      activeSubjectFilter = subject;
+      switchTab('plan');
+      updateAllViews();
+    }
+
+    // ==================== VIEW 2: STUDY PLAN RENDERING ====================
+    function renderSubjectFilterPills() {
+      const container = document.getElementById('plan-subject-pills');
+      const subjects = ['all', ...new Set(getAllBooks().map(b => b.subject))];
+
+      container.innerHTML = subjects.map(subj => {
+        const isActive = activeSubjectFilter === subj;
+        const label = subj === 'all' ? 'جميع المواد (9 كتب)' : subj;
+        return `
+          <button onclick="setSubjectFilter('${subj}')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${isActive ? 'bg-emerald-700 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
+            ${label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function setSubjectFilter(subj) {
+      activeSubjectFilter = subj;
+      renderSubjectFilterPills();
+      renderStudyPlan();
+    }
+
+    function renderStudyPlan() {
+      const container = document.getElementById('plan-chapters-container');
+      const statusFilter = document.getElementById('plan-filter-status').value;
+      const searchQuery = (document.getElementById('plan-search-input').value || '').trim().toLowerCase();
+
+      const books = getAllBooks().filter(b => activeSubjectFilter === 'all' || b.subject === activeSubjectFilter);
+
+      const htmlBlocks = books.map(book => {
+        const filteredChapters = book.chapters.filter(ch => {
+          const isDone = completedChapters.includes(ch.id);
+          if (statusFilter === 'completed' && !isDone) return false;
+          if (statusFilter === 'pending' && isDone) return false;
+          if (searchQuery && !ch.title.toLowerCase().includes(searchQuery) && !book.title.toLowerCase().includes(searchQuery)) return false;
+          return true;
+        });
+
+        if (filteredChapters.length === 0) return '';
+
+        const doneCount = book.chapters.filter(c => completedChapters.includes(c.id)).length;
+        const pct = book.chapters.length > 0 ? Math.round((doneCount / book.chapters.length) * 100) : 0;
+        const hasPdf = Boolean(bookBlobUrls[book.id]);
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+            <div class="p-4 sm:p-5 bg-slate-50 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-md text-xs font-extrabold ${book.badgeColor || 'bg-emerald-100 text-emerald-800'}">${book.subject}</span>
+                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800">${book.title}</h3>
+                  ${hasPdf ? '<span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-extrabold">✓ PDF مرفق</span>' : ''}
+                </div>
+                <p class="text-xs text-slate-500 mt-1">${book.authors} • ${book.pages} صفحة</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                <div class="text-left ml-2">
+                  <span class="text-xs font-extrabold text-emerald-700">${pct}% مكتمل</span>
+                  <p class="text-[11px] text-slate-400">${doneCount}/${book.chapters.length} أبواب</p>
+                </div>
+                <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition">
+                  <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToBookById(event, '${book.id}')" />
+                  <span>${hasPdf ? 'تغيير PDF' : 'إرفاق PDF'}</span>
+                </label>
+                <button onclick="openFullScreenBook('${book.id}')" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition">
+                  شاشة كاملة ⛶
+                </button>
+                <button onclick="openBookReaderModal('${book.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition">
+                  فتح الكتاب (PDF)
+                </button>
+              </div>
+            </div>
+
+            <div class="divide-y divide-slate-100">
+              ${filteredChapters.map(ch => {
+                const isDone = completedChapters.includes(ch.id);
+                const priorityBadge = ch.priority === 'عالية جداً'
+                  ? 'bg-rose-50 text-rose-700 border-rose-200'
+                  : ch.priority === 'عالية'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                  : 'bg-slate-100 text-slate-600 border-slate-200';
+
+                return `
+                  <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 transition ${isDone ? 'bg-emerald-50/30' : ''}">
+                    <label class="flex items-start gap-3 cursor-pointer flex-1">
+                      <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleChapterCompletion('${ch.id}')" class="mt-1 w-4 h-4 accent-emerald-600 rounded cursor-pointer shrink-0" />
+                      <div>
+                        <span class="text-xs sm:text-sm font-bold ${isDone ? 'line-through text-slate-400' : 'text-slate-800'}">${ch.title}</span>
+                        <div class="flex flex-wrap items-center gap-2 mt-1">
+                          <span class="text-[11px] text-slate-500 font-medium">الصفحات: ${ch.pages}</span>
+                          <span class="px-2 py-0.2 rounded border text-[10px] font-bold ${priorityBadge}">أهمية: ${ch.priority}</span>
+                        </div>
+                      </div>
+                    </label>
+                    <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                      <button onclick="openFullScreenBook('${book.id}')" class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition">
+                        شاشة كاملة ⛶
+                      </button>
+                      <button onclick="openBookReaderModal('${book.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                        مراجعة الباب
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).filter(Boolean);
+
+      container.innerHTML = htmlBlocks.length > 0
+        ? htmlBlocks.join('')
+        : `<div class="bg-white rounded-2xl p-8 text-center border border-slate-200 text-slate-500 text-sm font-bold">لا توجد أبواب مطابقة لخيارات البحث الحالية.</div>`;
+    }
+
+    function toggleChapterCompletion(chapterId) {
+      if (completedChapters.includes(chapterId)) {
+        completedChapters = completedChapters.filter(id => id !== chapterId);
+      } else {
+        completedChapters.push(chapterId);
+        showToast('تم تحديث إنجاز الباب في خطة المذاكرة!');
+      }
+      safeSetStorage(STORAGE_KEY_COMPLETED, completedChapters);
+      updateAllViews();
+      if (currentOpenBookId) {
+        renderBookModalContents(currentOpenBookId);
+      }
+      if (fsTargetType === 'book' && fsTargetId) {
+        renderFsChaptersSidebar(fsTargetId);
+      }
+    }
+
+    // ==================== VIEW 3: PDF BOOKS LIBRARY RENDERING ====================
+    function renderBooksLibrary() {
+      const container = document.getElementById('books-library-grid');
+      const query = (document.getElementById('books-search-input').value || '').trim().toLowerCase();
+      const allBooks = getAllBooks().filter(b => {
+        if (!query) return true;
+        const inTitle = b.title.toLowerCase().includes(query) || b.subject.toLowerCase().includes(query);
+        const inChapters = b.chapters.some(c => c.title.toLowerCase().includes(query));
+        return inTitle || inChapters;
+      });
+
+      container.innerHTML = allBooks.map(book => {
+        const doneCount = book.chapters.filter(c => completedChapters.includes(c.id)).length;
+        const pct = book.chapters.length > 0 ? Math.round((doneCount / book.chapters.length) * 100) : 0;
+        const hasPdf = Boolean(bookBlobUrls[book.id]);
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+            <div>
+              <!-- Book Cover Header -->
+              <div class="bg-gradient-to-l ${book.color || 'from-emerald-800 to-teal-900'} text-white p-5 relative book-spine">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-bold backdrop-blur-xs">
+                    ${book.subject}
+                  </span>
+                  <span class="text-xs font-bold text-white/90">${book.pages} صفحة • ${hasPdf ? '✓ PDF مرفق' : 'PDF'}</span>
+                </div>
+                <h3 class="text-base font-extrabold mt-3 leading-snug">${book.title}</h3>
+                <p class="text-xs text-white/80 mt-1 truncate">${book.authors}</p>
+              </div>
+
+              <!-- Book Details & Chapters Preview -->
+              <div class="p-5 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-600">الملف المرفق:</span>
+                  <span class="text-[11px] font-mono text-slate-500 truncate max-w-[200px]" title="${book.fileName}">${book.fileName}</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">${book.description}</p>
+
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px] font-bold text-slate-700">
+                    <span>أبرز الأبواب والوحدات (${book.chapters.length}):</span>
+                    <span class="text-emerald-700">${pct}% منجز</span>
+                  </div>
+                  <ul class="text-[11px] text-slate-600 space-y-1 pr-3 list-disc">
+                    ${book.chapters.slice(0, 3).map(c => `<li class="truncate">${c.title}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-5 pb-5 pt-2 flex flex-wrap items-center gap-2">
+              <button onclick="openFullScreenBook('${book.id}')" class="py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition flex items-center justify-center gap-1 shadow-2xs">
+                <span>شاشة كاملة ⛶</span>
+              </button>
+              <button onclick="openBookReaderModal('${book.id}')" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs">
+                <span>${hasPdf ? 'قراءة ملف الـ PDF والأبواب' : 'استعراض الكتاب والفهرس'}</span>
+              </button>
+              <label class="cursor-pointer py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition" title="ربط ملف الـ PDF من جهازك للمعاينة المباشرة">
+                <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToBookById(event, '${book.id}')" />
+                <span>${hasPdf ? 'تحديث PDF' : 'ربط PDF'}</span>
+              </label>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== BOOK READER MODAL LOGIC ====================
+    function openBookReaderModal(bookId) {
+      currentOpenBookId = bookId;
+      renderBookModalContents(bookId);
+      document.getElementById('book-reader-modal').classList.remove('hidden');
+    }
+
+    function closeBookReaderModal() {
+      currentOpenBookId = null;
+      document.getElementById('book-reader-modal').classList.add('hidden');
+    }
+
+    function openCurrentBookInFullScreen() {
+      if (!currentOpenBookId) return;
+      const bookId = currentOpenBookId;
+      closeBookReaderModal();
+      openFullScreenBook(bookId);
+    }
+
+    function renderBookModalContents(bookId) {
+      const book = getAllBooks().find(b => b.id === bookId);
+      if (!book) return;
+
+      document.getElementById('modal-book-badge').textContent = `${book.subject} • ${book.pages} صفحة`;
+      document.getElementById('modal-book-title').textContent = book.title;
+      document.getElementById('modal-book-meta').textContent = `الملف: ${book.fileName}`;
+      document.getElementById('modal-book-authors').textContent = book.authors;
+      document.getElementById('modal-book-desc').textContent = book.description;
+
+      // Render chapters checklist inside modal
+      const chaptersContainer = document.getElementById('modal-book-chapters');
+      chaptersContainer.innerHTML = book.chapters.map(ch => {
+        const isDone = completedChapters.includes(ch.id);
+        return `
+          <label class="flex items-start gap-2.5 p-3 rounded-xl border ${isDone ? 'bg-emerald-50/60 border-emerald-200' : 'bg-white border-slate-200'} cursor-pointer hover:border-emerald-400 transition">
+            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleChapterCompletion('${ch.id}')" class="mt-1 w-4 h-4 accent-emerald-600 rounded shrink-0" />
+            <div class="text-xs">
+              <p class="font-bold ${isDone ? 'line-through text-slate-400' : 'text-slate-800'}">${ch.title}</p>
+              <span class="text-[11px] text-slate-500">${ch.pages} • الأهمية: ${ch.priority}</span>
+            </div>
+          </label>
+        `;
+      }).join('');
+
+      // Render right-side PDF viewer or prompt
+      const viewerContainer = document.getElementById('modal-pdf-viewer-container');
+      const pdfUrl = bookBlobUrls[book.id];
+
+      if (pdfUrl) {
+        viewerContainer.className = 'flex-1 flex flex-col bg-slate-900 overflow-hidden min-h-[450px]';
+        viewerContainer.innerHTML = `
+          <div class="bg-slate-800 px-3 py-2 flex items-center justify-between text-xs text-white border-b border-slate-700">
+            <span class="font-bold text-emerald-300">✓ ملف الـ PDF مرفق وجاهز للقراءة</span>
+            <button onclick="openCurrentBookInFullScreen()" class="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold transition">
+              تكبير شاشة كاملة ⛶
+            </button>
+          </div>
+          <iframe src="${pdfUrl}" class="w-full flex-1 min-h-[420px] border-0 bg-white" title="${book.title}"></iframe>
+        `;
+      } else {
+        viewerContainer.className = 'flex-1 flex flex-col items-center justify-center p-6 text-center bg-slate-50';
+        viewerContainer.innerHTML = `
+          <div class="max-w-md space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-inner">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </div>
+            <h4 class="text-base font-extrabold text-slate-800">معاينة ملف الـ PDF المباشرة والفتح بشاشة كاملة</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              تم إدراج جميع أبواب وفصول <strong>${book.title}</strong> (${book.pages} صفحة). لفتح صفحات ملف الـ PDF في <strong>شاشة كاملة</strong>، اختر الملف <code class="bg-slate-200 px-1.5 py-0.5 rounded text-[11px]">${book.fileName}</code> من جهازك:
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-2.5">
+              <label class="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-sm transition">
+                <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToCurrentBook(event)" />
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                <span>اختيار ملف الـ PDF وفتحه الآن</span>
+              </label>
+              <button onclick="openCurrentBookInFullScreen()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs sm:text-sm font-extrabold shadow-sm transition">
+                فتح وضع الشاشة الكاملة ⛶
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function attachPdfToCurrentBook(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file || !currentOpenBookId) return;
+      const bookId = currentOpenBookId;
+      bookBlobUrls[bookId] = URL.createObjectURL(file);
+      bookFileObjects[bookId] = file;
+      savePdfBlobToDB('book:' + bookId, file);
+      showToast('تم إرفاق ملف الـ PDF بنجاح! جاري فتحه في الشاشة الكاملة...');
+      renderBookModalContents(bookId);
+      updateAllViews();
+      openCurrentBookInFullScreen();
+      event.target.value = '';
+    }
+
+    function attachPdfToBookById(event, bookId) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      bookBlobUrls[bookId] = URL.createObjectURL(file);
+      bookFileObjects[bookId] = file;
+      savePdfBlobToDB('book:' + bookId, file);
+      showToast('تم إرفاق ملف الـ PDF للمادة! جاري الفتح بشاشة كاملة...');
+      updateAllViews();
+      openFullScreenBook(bookId);
+      event.target.value = '';
+    }
+
+    function attachPdfToExamById(event, examId) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      examBlobUrls[examId] = URL.createObjectURL(file);
+      examFileObjects[examId] = file;
+      savePdfBlobToDB('exam:' + examId, file);
+      showToast('تم إرفاق ملف الـ PDF للامتحان! جاري الفتح بشاشة كاملة...');
+      updateAllViews();
+      openFullScreenExam(examId);
+      event.target.value = '';
+    }
+
+    // Batch upload multiple subject PDFs at once with smart filename matching
+    function handleBatchBooksPdfUpload(event) {
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+
+      const allBooks = getAllBooks();
+      let matchedCount = 0;
+      let firstMatchedBookId = null;
+
+      files.forEach(file => {
+        const name = file.name.toLowerCase();
+        let targetBook = null;
+
+        if (name.includes('تربية') || name.includes('التربية') || name.includes('اسلامية') || name.includes('إسلامية')) {
+          targetBook = allBooks.find(b => b.id === 'book-islamic-ed');
+        } else if (name.includes('نحو') || name.includes('النحو')) {
+          targetBook = allBooks.find(b => b.id === 'book-arabic-nahw');
+        } else if (name.includes('بلاغة') || name.includes('البلاغة')) {
+          targetBook = allBooks.find(b => b.id === 'book-arabic-balagha');
+        } else if (name.includes('مطالعة') || name.includes('أدب') || name.includes('ادب')) {
+          targetBook = allBooks.find(b => b.id === 'book-arabic-adab');
+        } else if (name.includes('خاصة') || name.includes('الخاصة')) {
+          targetBook = allBooks.find(b => b.id === 'book-arabic-special');
+        } else if (name.includes('تاريخ') || name.includes('التاريخ')) {
+          targetBook = allBooks.find(b => b.id === 'book-history');
+        } else if (name.includes('جغرافي') || name.includes('الجغرافيا')) {
+          targetBook = allBooks.find(b => b.id === 'book-geography');
+        } else if (name.includes('انجليزي') || name.includes('إنجليزي') || name.includes('english') || name.includes('spine')) {
+          targetBook = allBooks.find(b => b.id === 'book-english');
+        } else if (name.includes('رياضيات') || name.includes('الرياضيات') || name.includes('math')) {
+          targetBook = allBooks.find(b => b.id === 'book-math');
+        }
+
+        // Fallback: match first unattached book if still not matched
+        if (!targetBook) {
+          targetBook = allBooks.find(b => !bookBlobUrls[b.id]) || allBooks[0];
+        }
+
+        if (targetBook) {
+          bookBlobUrls[targetBook.id] = URL.createObjectURL(file);
+          bookFileObjects[targetBook.id] = file;
+          savePdfBlobToDB('book:' + targetBook.id, file);
+          matchedCount++;
+          if (!firstMatchedBookId) firstMatchedBookId = targetBook.id;
+        }
+      });
+
+      updateAllViews();
+      showToast(`تم إرفاق وربط ${matchedCount} ملف PDF بالمواد الدراسية بنجاح!`);
+      if (firstMatchedBookId && files.length === 1) {
+        openFullScreenBook(firstMatchedBookId);
+      }
+      event.target.value = '';
+    }
+
+    // ==================== DEDICATED 100% FULL-SCREEN READER LOGIC ====================
+    function openFullScreenBook(bookId) {
+      fsTargetType = 'book';
+      fsTargetId = bookId;
+      const modal = document.getElementById('fullscreen-reader-modal');
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      const sidebarBtn = document.getElementById('fs-sidebar-toggle-btn');
+      sidebarBtn.classList.remove('hidden');
+      renderFsChaptersSidebar(bookId);
+      renderFullScreenContent();
+    }
+
+    function openFullScreenExam(examId) {
+      fsTargetType = 'exam';
+      fsTargetId = examId;
+      const modal = document.getElementById('fullscreen-reader-modal');
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      document.getElementById('fs-chapters-sidebar').classList.add('hidden');
+      document.getElementById('fs-sidebar-toggle-btn').classList.add('hidden');
+      renderFullScreenContent();
+    }
+
+    function closeFullScreenReader() {
+      const modal = document.getElementById('fullscreen-reader-modal');
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      try {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    function triggerBrowserNativeFullscreen() {
+      const modal = document.getElementById('fullscreen-reader-modal');
+      try {
+        if (!document.fullscreenElement) {
+          if (modal.requestFullscreen) {
+            modal.requestFullscreen().catch(() => {});
+          }
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch (e) {
+        // Fallback already active via fixed inset-0 w-screen h-screen
+      }
+    }
+
+    function toggleFsChaptersSidebar() {
+      const sidebar = document.getElementById('fs-chapters-sidebar');
+      sidebar.classList.toggle('hidden');
+    }
+
+    function renderFsChaptersSidebar(bookId) {
+      const book = getAllBooks().find(b => b.id === bookId);
+      const list = document.getElementById('fs-chapters-list');
+      if (!book || !list) return;
+
+      list.innerHTML = book.chapters.map(ch => {
+        const isDone = completedChapters.includes(ch.id);
+        return `
+          <label class="flex items-start gap-2.5 p-2.5 rounded-xl border ${isDone ? 'bg-emerald-950/60 border-emerald-700/60 text-emerald-300' : 'bg-slate-800/80 border-slate-700 text-slate-200'} cursor-pointer hover:border-emerald-500 transition">
+            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleChapterCompletion('${ch.id}')" class="mt-1 w-4 h-4 accent-emerald-500 rounded shrink-0" />
+            <div class="text-xs">
+              <p class="font-bold ${isDone ? 'line-through text-slate-400' : 'text-white'}">${ch.title}</p>
+              <span class="text-[10px] text-slate-400">${ch.pages} • الأهمية: ${ch.priority}</span>
+            </div>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function changeFsPdfZoom(delta) {
+      fsZoomScale = Math.min(2.6, Math.max(0.6, +(fsZoomScale + delta).toFixed(2)));
+      document.getElementById('fs-zoom-label').textContent = `${Math.round(fsZoomScale * 100)}%`;
+      renderFullScreenContent();
+    }
+
+    function switchFsRenderMode() {
+      fsUseCanvasMode = !fsUseCanvasMode;
+      renderFullScreenContent();
+    }
+
+    function openFsPdfInNewTab() {
+      const url = fsTargetType === 'book' ? bookBlobUrls[fsTargetId] : examBlobUrls[fsTargetId];
+      if (url) {
+        window.open(url, '_blank');
+      }
+    }
+
+    function handleFsAttachPdf(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file || !fsTargetId) return;
+
+      const url = URL.createObjectURL(file);
+      if (fsTargetType === 'book') {
+        bookBlobUrls[fsTargetId] = url;
+        bookFileObjects[fsTargetId] = file;
+        savePdfBlobToDB('book:' + fsTargetId, file);
+      } else if (fsTargetType === 'exam') {
+        examBlobUrls[fsTargetId] = url;
+        examFileObjects[fsTargetId] = file;
+        savePdfBlobToDB('exam:' + fsTargetId, file);
+      }
+      showToast('تم إرفاق ملف الـ PDF وعرضه في الشاشة الكاملة!');
+      updateAllViews();
+      renderFullScreenContent();
+      event.target.value = '';
+    }
+
+    async function renderFullScreenContent() {
+      const viewport = document.getElementById('fs-pdf-viewport');
+      const badgeEl = document.getElementById('fs-reader-badge');
+      const titleEl = document.getElementById('fs-reader-title');
+      const subEl = document.getElementById('fs-reader-subtitle');
+      const newTabBtn = document.getElementById('fs-newtab-btn');
+      const modeBtn = document.getElementById('fs-mode-toggle-btn');
+
+      let title = '';
+      let subtitle = '';
+      let badge = '';
+      let pdfUrl = null;
+      let fileObj = null;
+      let itemData = null;
+
+      if (fsTargetType === 'book') {
+        itemData = getAllBooks().find(b => b.id === fsTargetId);
+        if (!itemData) return;
+        title = itemData.title;
+        subtitle = `${itemData.subject} • ${itemData.authors} • ${itemData.pages} صفحة`;
+        badge = itemData.subject;
+        pdfUrl = bookBlobUrls[fsTargetId];
+        fileObj = bookFileObjects[fsTargetId];
+      } else {
+        itemData = examsList.find(e => e.id === fsTargetId);
+        if (!itemData) return;
+        title = itemData.title;
+        subtitle = `${itemData.subject} • ${itemData.year} • الزمن: ${itemData.duration}`;
+        badge = `امتحان • ${itemData.subject}`;
+        pdfUrl = examBlobUrls[fsTargetId];
+        fileObj = examFileObjects[fsTargetId];
+      }
+
+      badgeEl.textContent = badge;
+      titleEl.textContent = title;
+      subEl.textContent = subtitle;
+      modeBtn.textContent = fsUseCanvasMode ? 'العرض الحالي: قارئ الصفحات الذكي (تبديل)' : 'العرض الحالي: مدمج المتصفح (تبديل)';
+
+      if (pdfUrl) {
+        newTabBtn.classList.remove('hidden');
+      } else {
+        newTabBtn.classList.add('hidden');
+      }
+
+      // If no PDF attached yet, show full-screen interactive summary + huge attach dropzone
+      if (!pdfUrl) {
+        const chaptersHtml = fsTargetType === 'book' && itemData.chapters
+          ? `
+            <div class="w-full max-w-4xl mt-6 text-right">
+              <h4 class="text-sm font-extrabold text-emerald-400 mb-3">فهرس أبواب ووحدات المادة (${itemData.chapters.length} أبواب):</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                ${itemData.chapters.map(ch => {
+                  const isDone = completedChapters.includes(ch.id);
+                  return `
+                    <label class="flex items-start gap-2.5 p-3 rounded-xl border ${isDone ? 'bg-emerald-950/60 border-emerald-700' : 'bg-slate-900 border-slate-800'} cursor-pointer hover:border-emerald-500 transition">
+                      <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleChapterCompletion('${ch.id}')" class="mt-1 w-4 h-4 accent-emerald-500 rounded shrink-0" />
+                      <div class="text-xs">
+                        <p class="font-bold ${isDone ? 'line-through text-slate-400' : 'text-slate-100'}">${ch.title}</p>
+                        <span class="text-[11px] text-slate-400">${ch.pages} • الأهمية: ${ch.priority}</span>
+                      </div>
+                    </label>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `
+          : '';
+
+        viewport.innerHTML = `
+          <div class="my-auto max-w-2xl w-full bg-slate-900 border-2 border-dashed border-emerald-500/60 rounded-3xl p-8 text-center space-y-5 shadow-2xl">
+            <div class="w-20 h-20 rounded-3xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            </div>
+            <div>
+              <span class="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-extrabold">عارض الشاشة الكاملة (Full Screen PDF)</span>
+              <h3 class="text-lg sm:text-xl font-extrabold text-white mt-2">${title}</h3>
+              <p class="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
+                أنت الآن في وضع <strong>الشاشة الكاملة</strong>. اختر ملف الـ PDF الخاص بهذه المادة من جهازك ليتم عرضه فوراً بكامل الشاشة وبأعلى دقة، مع حفظه تلقائياً في الداش بورد:
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <label class="cursor-pointer px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-extrabold shadow-lg transition inline-flex items-center gap-2.5">
+                <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleFsAttachPdf(event)" />
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                <span>إرفاق ملف الـ PDF وفتحه بكامل الشاشة الآن</span>
+              </label>
+            </div>
+          </div>
+          ${chaptersHtml}
+        `;
+        return;
+      }
+
+      // If PDF is attached: render either via PDF.js Canvas (reliable in all sandboxes) or Native Iframe
+      if (!fsUseCanvasMode || !window.pdfjsLib || !fileObj) {
+        viewport.innerHTML = `
+          <iframe src="${pdfUrl}" class="w-full h-full flex-1 min-h-[82vh] rounded-xl border border-slate-700 bg-white" title="${title}"></iframe>
+        `;
+        return;
+      }
+
+      // Render using PDF.js high-resolution canvas pages
+      viewport.innerHTML = `
+        <div id="fs-pdf-loading" class="my-auto text-center space-y-3 py-12">
+          <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p class="text-sm font-bold text-slate-300">جاري تجهيز صفحات الـ PDF للعرض بالشاشة الكاملة...</p>
+        </div>
+        <div id="fs-pdf-pages-holder" class="w-full flex flex-col items-center"></div>
+      `;
+
+      try {
+        const arrayBuffer = await fileObj.arrayBuffer();
+        const pdfDoc = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const loadingEl = document.getElementById('fs-pdf-loading');
+        const holder = document.getElementById('fs-pdf-pages-holder');
+        if (!holder) return;
+        if (loadingEl) loadingEl.remove();
+
+        const infoBar = document.createElement('div');
+        infoBar.className = 'mb-4 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-xs font-bold text-emerald-300';
+        infoBar.textContent = `إجمالي صفحات ملف الـ PDF المرفق: ${pdfDoc.numPages} صفحة (مرر للأسفل لقراءة كافة الصفحات)`;
+        holder.appendChild(infoBar);
+
+        const maxPagesToRenderInitially = Math.min(pdfDoc.numPages, 25);
+        for (let pageNum = 1; pageNum <= maxPagesToRenderInitially; pageNum++) {
+          const page = await pdfDoc.getPage(pageNum);
+          const vp = page.getViewport({ scale: fsZoomScale });
+          const canvas = document.createElement('canvas');
+          canvas.className = 'pdf-canvas-page';
+          canvas.width = vp.width;
+          canvas.height = vp.height;
+          holder.appendChild(canvas);
+          await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+        }
+
+        if (pdfDoc.numPages > maxPagesToRenderInitially) {
+          const loadMoreBtn = document.createElement('button');
+          loadMoreBtn.className = 'my-4 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-lg transition';
+          loadMoreBtn.textContent = `تحميل باقي الصفحات (${pdfDoc.numPages - maxPagesToRenderInitially} صفحة متبقية) أو التبديل للعارض المدمج`;
+          loadMoreBtn.onclick = async () => {
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.textContent = 'جاري تحميل باقي الصفحات...';
+            for (let pageNum = maxPagesToRenderInitially + 1; pageNum <= pdfDoc.numPages; pageNum++) {
+              const page = await pdfDoc.getPage(pageNum);
+              const vp = page.getViewport({ scale: fsZoomScale });
+              const canvas = document.createElement('canvas');
+              canvas.className = 'pdf-canvas-page';
+              canvas.width = vp.width;
+              canvas.height = vp.height;
+              holder.insertBefore(canvas, loadMoreBtn);
+              await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+            }
+            loadMoreBtn.remove();
+          };
+          holder.appendChild(loadMoreBtn);
+        }
+      } catch (err) {
+        // Fallback to native iframe if PDF.js encounters any issue
+        viewport.innerHTML = `
+          <iframe src="${pdfUrl}" class="w-full h-full flex-1 min-h-[82vh] rounded-xl border border-slate-700 bg-white" title="${title}"></iframe>
+        `;
+      }
+    }
+
+    // ==================== ADD NEW BOOK MODAL ====================
+    function openAddBookModal() {
+      document.getElementById('add-book-modal').classList.remove('hidden');
+    }
+
+    function closeAddBookModal() {
+      document.getElementById('add-book-modal').classList.add('hidden');
+    }
+
+    function submitNewBookForm(event) {
+      event.preventDefault();
+      const title = document.getElementById('new-book-title').value.trim();
+      const subject = document.getElementById('new-book-subject').value;
+      const pages = parseInt(document.getElementById('new-book-pages').value, 10) || 100;
+      const fileInput = document.getElementById('new-book-file');
+      const rawChapters = document.getElementById('new-book-chapters').value.trim();
+
+      const newId = 'book-custom-' + Date.now();
+      const chapterLines = rawChapters
+        ? rawChapters.split(/\n|،|,/).map(s => s.trim()).filter(Boolean)
+        : ['الباب الأول: مراجعة شاملة', 'الباب الثاني: تدريبات وتطبيقات'];
+
+      const chapters = chapterLines.map((line, idx) => ({
+        id: `${newId}-ch-${idx + 1}`,
+        title: line,
+        pages: `قسم ${idx + 1}`,
+        priority: 'عالية'
+      }));
+
+      const file = fileInput.files && fileInput.files[0];
+      if (file) {
+        bookBlobUrls[newId] = URL.createObjectURL(file);
+        bookFileObjects[newId] = file;
+        savePdfBlobToDB('book:' + newId, file);
+      }
+
+      const newBook = {
+        id: newId,
+        title,
+        fileName: file ? file.name : `${title}.pdf`,
+        subject,
+        category: 'مذكرة / كتاب مضاف',
+        pages,
+        year: 'مضاف حديثاً',
+        authors: 'مكتبة الطالب الخاصة',
+        color: 'from-teal-700 to-emerald-900',
+        badgeColor: 'bg-teal-100 text-teal-800',
+        description: 'كتاب / مذكرة PDF مضافة بواسطة الطالب ضمن خطة المساق الأدبي - الدراسات الإسلامية.',
+        chapters
+      };
+
+      customBooks.push(newBook);
+      safeSetStorage(STORAGE_KEY_CUSTOM_BOOKS, customBooks);
+      closeAddBookModal();
+      event.target.reset();
+      updateAllViews();
+      showToast('تمت إضافة الكتاب وأبوابه إلى المكتبة وخطة المذاكرة!');
+      if (file) {
+        openFullScreenBook(newId);
+      }
+    }
+
+    // ==================== VIEW 4: EXAMS CENTER & UPLOAD LOGIC ====================
+    function renderExamsCenter() {
+      const container = document.getElementById('exams-center-grid');
+      const subjFilter = document.getElementById('exams-filter-subject').value;
+      const statusFilter = document.getElementById('exams-filter-status').value;
+
+      const filtered = examsList.filter(ex => {
+        if (subjFilter !== 'all' && ex.subject !== subjFilter) return false;
+        if (statusFilter === 'pinned' && !ex.pinned) return false;
+        if (statusFilter === 'solved' && !ex.solved) return false;
+        if (statusFilter === 'pending' && ex.solved) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-slate-200">
+            <p class="text-sm font-bold text-slate-600">لا توجد امتحانات مطابقة للفلتر المحدد.</p>
+            <button onclick="openUploadExamModal()" class="mt-3 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">
+              + رفع امتحان PDF جديد
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(exam => {
+        const hasPdf = Boolean(examBlobUrls[exam.id]);
+        return `
+          <div class="bg-white rounded-2xl border ${exam.solved ? 'border-emerald-300' : 'border-slate-200/90'} shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-extrabold">${exam.subject}</span>
+                <div class="flex items-center gap-1.5">
+                  ${hasPdf ? '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">✓ PDF مرفق</span>' : ''}
+                  <button onclick="toggleExamPin('${exam.id}')" class="px-2 py-0.5 rounded text-[11px] font-bold transition ${exam.pinned ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}" title="تثبيت أو إزالة من الداش بورد الرئيسي">
+                    ${exam.pinned ? '★ بالداش بورد' : '☆ تثبيت بالداش بورد'}
+                  </button>
+                </div>
+              </div>
+
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 mt-3 leading-snug">${exam.title}</h3>
+              <p class="text-xs text-slate-500 mt-1">${exam.year} • الزمن: ${exam.duration} • الدرجة: ${exam.marks}</p>
+              <p class="text-xs text-slate-600 mt-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 line-clamp-2">${exam.notes || 'امتحان شامل للتدريب والمراجعة.'}</p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5">
+              <button onclick="openFullScreenExam('${exam.id}')" class="py-2 px-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition">
+                شاشة كاملة ⛶
+              </button>
+              <button onclick="openExamViewerModal('${exam.id}')" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition text-center">
+                ${hasPdf ? 'فتح ملف الامتحان (PDF)' : 'عرض الأسئلة / إرفاق PDF'}
+              </button>
+              <button onclick="toggleExamSolved('${exam.id}')" class="py-2 px-2.5 rounded-xl text-xs font-bold transition ${exam.solved ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
+                ${exam.solved ? 'محلول ✓' : 'تحديد كمحلول'}
+              </button>
+              <button onclick="deleteExam('${exam.id}')" class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition" title="حذف الامتحان">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openUploadExamModal() {
+      document.getElementById('upload-exam-modal').classList.remove('hidden');
+    }
+
+    function closeUploadExamModal() {
+      document.getElementById('upload-exam-modal').classList.add('hidden');
+    }
+
+    function submitExamForm(event) {
+      event.preventDefault();
+      const title = document.getElementById('exam-title-input').value.trim();
+      const subject = document.getElementById('exam-subject-input').value;
+      const year = document.getElementById('exam-year-input').value.trim() || 'شهادة سودانية';
+      const duration = document.getElementById('exam-duration-input').value.trim() || '3 ساعات';
+      const marks = parseInt(document.getElementById('exam-marks-input').value, 10) || 100;
+      const notes = document.getElementById('exam-notes-input').value.trim();
+      const pinned = document.getElementById('exam-pin-checkbox').checked;
+      const fileInput = document.getElementById('exam-file-input');
+
+      const newId = 'exam-' + Date.now();
+      const file = fileInput.files && fileInput.files[0];
+      if (file) {
+        examBlobUrls[newId] = URL.createObjectURL(file);
+        examFileObjects[newId] = file;
+        savePdfBlobToDB('exam:' + newId, file);
+      }
+
+      const newExam = {
+        id: newId,
+        title,
+        subject,
+        year,
+        duration,
+        marks,
+        pinned,
+        solved: false,
+        notes: notes || (file ? `ملف مرفق: ${file.name}` : 'امتحان مضاف للمراجعة.'),
+        sampleQuestions: [
+          'تم رفع هذا الامتحان بواسطة الطالب. يمكنك معاينة ملف الـ PDF المرفق مباشرة في هذه النافذة أو فتحه بشاشة كاملة.'
+        ]
+      };
+
+      examsList.unshift(newExam);
+      safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      closeUploadExamModal();
+      event.target.reset();
+      updateAllViews();
+      showToast('تم رفع الامتحان وإضافته إلى الداش بورد بنجاح!');
+
+      if (file) {
+        openFullScreenExam(newId);
+      }
+    }
+
+    function handleQuickExamFileSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const cleanName = file.name.replace(/\.pdf$/i, '');
+      const newId = 'exam-' + Date.now();
+      examBlobUrls[newId] = URL.createObjectURL(file);
+      examFileObjects[newId] = file;
+      savePdfBlobToDB('exam:' + newId, file);
+
+      // Guess subject from filename if possible
+      let guessedSubject = 'التربية الإسلامية';
+      if (cleanName.includes('نحو') || cleanName.includes('بلاغة') || cleanName.includes('عربي') || cleanName.includes('أدب')) guessedSubject = 'اللغة العربية';
+      else if (cleanName.includes('تاريخ')) guessedSubject = 'التاريخ';
+      else if (cleanName.includes('جغرافي')) guessedSubject = 'الجغرافيا والدراسات البيئية';
+      else if (cleanName.includes('رياضيات')) guessedSubject = 'الرياضيات الأساسية';
+      else if (cleanName.includes('انجليزي') || cleanName.toLowerCase().includes('english')) guessedSubject = 'اللغة الإنجليزية';
+      else if (cleanName.includes('إسلامية') || cleanName.includes('قرآن')) guessedSubject = 'التربية الإسلامية';
+
+      const newExam = {
+        id: newId,
+        title: cleanName,
+        subject: guessedSubject,
+        year: 'ملف PDF مرفوع',
+        duration: '3 ساعات',
+        marks: 100,
+        pinned: true,
+        solved: false,
+        notes: `ملف امتحان PDF تم رفعه مباشرة (${file.name})`,
+        sampleQuestions: []
+      };
+
+      examsList.unshift(newExam);
+      safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      updateAllViews();
+      showToast(`تم رفع "${cleanName}" وفتحه في الشاشة الكاملة!`);
+      openFullScreenExam(newId);
+      event.target.value = '';
+    }
+
+    function toggleExamPin(examId) {
+      const ex = examsList.find(e => e.id === examId);
+      if (!ex) return;
+      ex.pinned = !ex.pinned;
+      safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      updateAllViews();
+      showToast(ex.pinned ? 'تم تثبيت الامتحان في الداش بورد الرئيسي!' : 'تم إخفاء الامتحان من الداش بورد الرئيسي.');
+    }
+
+    function toggleExamSolved(examId) {
+      const ex = examsList.find(e => e.id === examId);
+      if (!ex) return;
+      ex.solved = !ex.solved;
+      safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      updateAllViews();
+      showToast(ex.solved ? 'أحسنت! تم تحديد الامتحان كـ "تم الحل"' : 'تم إعادة حالة الامتحان إلى "جاهز للحل"');
+    }
+
+    function deleteExam(examId) {
+      examsList = examsList.filter(e => e.id !== examId);
+      safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      updateAllViews();
+      showToast('تم حذف الامتحان من القائمة.');
+    }
+
+    // ==================== EXAM VIEWER MODAL ====================
+    function openExamViewerModal(examId) {
+      currentOpenExamId = examId;
+      renderExamViewerModal(examId);
+      document.getElementById('exam-viewer-modal').classList.remove('hidden');
+    }
+
+    function closeExamViewerModal() {
+      currentOpenExamId = null;
+      document.getElementById('exam-viewer-modal').classList.add('hidden');
+    }
+
+    function openCurrentExamInFullScreen() {
+      if (!currentOpenExamId) return;
+      const examId = currentOpenExamId;
+      closeExamViewerModal();
+      openFullScreenExam(examId);
+    }
+
+    function renderExamViewerModal(examId) {
+      const exam = examsList.find(e => e.id === examId);
+      if (!exam) return;
+
+      document.getElementById('exam-modal-subject').textContent = exam.subject;
+      document.getElementById('exam-modal-year').textContent = `${exam.year} • ${exam.duration} • ${exam.marks} درجة`;
+      document.getElementById('exam-modal-title').textContent = exam.title;
+
+      const solvedBtn = document.getElementById('exam-modal-solved-btn');
+      solvedBtn.textContent = exam.solved ? 'تم الحل ✓ (إلغاء)' : 'تحديد كـ "تم الحل"';
+      solvedBtn.className = exam.solved
+        ? 'px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition'
+        : 'px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition';
+
+      const body = document.getElementById('exam-modal-body');
+      const pdfUrl = examBlobUrls[exam.id];
+
+      if (pdfUrl) {
+        body.innerHTML = `
+          <div class="bg-indigo-950 text-white px-4 py-2 rounded-t-xl flex items-center justify-between text-xs">
+            <span class="font-bold text-emerald-300">✓ ملف الـ PDF مرفق</span>
+            <button onclick="openCurrentExamInFullScreen()" class="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold transition">
+              فتح شاشة كاملة ⛶
+            </button>
+          </div>
+          <iframe src="${pdfUrl}" class="w-full flex-1 min-h-[480px] rounded-b-xl border border-slate-300 bg-white" title="${exam.title}"></iframe>
+        `;
+      } else {
+        body.innerHTML = `
+          <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-2xs space-y-5 max-w-3xl mx-auto w-full">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div>
+                <h4 class="text-base font-extrabold text-slate-800">ورقة الأسئلة النموذجية والمحاور</h4>
+                <p class="text-xs text-slate-500 mt-0.5">${exam.notes || ''}</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <label class="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition inline-flex items-center gap-1.5">
+                  <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="attachPdfToCurrentExam(event)" />
+                  <span>+ إرفاق ملف PDF لهذا الامتحان</span>
+                </label>
+                <button onclick="openCurrentExamInFullScreen()" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition">
+                  فتح شاشة كاملة ⛶
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              ${(exam.sampleQuestions && exam.sampleQuestions.length > 0 ? exam.sampleQuestions : ['اضغط على زر "إرفاق ملف PDF" بالأعلى لعرض ورقة الامتحان الكاملة بصيغة PDF هنا أو في الشاشة الكاملة.']).map((q, i) => `
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+                  <span class="font-extrabold text-indigo-700 ml-1">(${i + 1})</span> ${q}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function attachPdfToCurrentExam(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file || !currentOpenExamId) return;
+      const examId = currentOpenExamId;
+      examBlobUrls[examId] = URL.createObjectURL(file);
+      examFileObjects[examId] = file;
+      savePdfBlobToDB('exam:' + examId, file);
+      showToast('تم إرفاق ملف الـ PDF للامتحان! جاري الفتح بشاشة كاملة...');
+      renderExamViewerModal(examId);
+      updateAllViews();
+      openCurrentExamInFullScreen();
+      event.target.value = '';
+    }
+
+    function toggleCurrentExamSolved() {
+      if (!currentOpenExamId) return;
+      toggleExamSolved(currentOpenExamId);
+      renderExamViewerModal(currentOpenExamId);
+    }
+
+    // ==================== VIEW 5: WEEKLY SCHEDULE ====================
+    function renderWeeklySchedule() {
+      const tbody = document.getElementById('weekly-schedule-tbody');
+      tbody.innerHTML = WEEKLY_SCHEDULE.map(row => `
+        <tr class="hover:bg-slate-50/90 transition">
+          <td class="py-3.5 px-4 font-extrabold text-emerald-900 bg-emerald-50/40 whitespace-nowrap">${row.day}</td>
+          <td class="py-3.5 px-4 text-slate-700 font-medium">${row.morning}</td>
+          <td class="py-3.5 px-4 text-slate-700 font-medium">${row.afternoon}</td>
+          <td class="py-3.5 px-4 text-slate-700 font-medium">${row.evening}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateAllViews();
+      restorePdfsFromDB();
+    });
+  </script>
+</body>
+</html>
