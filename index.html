@@ -129,6 +129,45 @@
           </button>
         </nav>
       </div>
+
+      <!-- Persistent Save & Connection Mode Toolbar in Header -->
+      <div class="mt-3 pt-2.5 border-t border-emerald-700/60 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+        <!-- Connection Status & Mode Switcher (متصل سحابي / متصل محلي) -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="inline-flex items-center bg-emerald-950/80 p-1 rounded-xl border border-emerald-700/70">
+            <button onclick="setConnectionMode('cloud')" id="mode-btn-cloud" class="px-3 py-1 rounded-lg font-extrabold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+              <span>متصل سحابي ☁️</span>
+            </button>
+            <button onclick="setConnectionMode('local')" id="mode-btn-local" class="px-3 py-1 rounded-lg font-extrabold transition flex items-center gap-1.5 text-emerald-200 hover:text-white">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>متصل محلي 💻</span>
+            </button>
+          </div>
+
+          <span id="connection-live-badge" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 font-bold flex items-center gap-1.5">
+            <span id="connection-live-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="connection-live-text">الوضع الحالي: متصل سحابي (Google Sheets + محلي)</span>
+          </span>
+        </div>
+
+        <!-- Save Changes Button & Auto-Save on Refresh/Update Control -->
+        <div class="flex flex-wrap items-center gap-2">
+          <label for="header-autosave-toggle" class="cursor-pointer px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-emerald-100 font-bold flex items-center gap-1.5">
+            <input id="header-autosave-toggle" type="checkbox" checked onchange="toggleAutoSyncSetting(event)" class="w-3.5 h-3.5 accent-amber-400 rounded cursor-pointer" />
+            <span>الحفظ التلقائي عند التحديث والتعديل</span>
+          </label>
+
+          <span id="header-last-saved-indicator" class="text-[11px] text-emerald-200/90 font-medium hidden sm:inline">
+            كل التعديلات محفوظة ✓
+          </span>
+
+          <button onclick="saveAllModificationsNow()" id="header-save-changes-btn" class="px-4 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold shadow-md transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>حفظ التعديلات 💾</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -259,6 +298,13 @@
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto shrink-0">
+          <button onclick="saveAllModificationsNow()" class="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-sm flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>حفظ التعديلات الآن 💾</span>
+          </button>
+          <button onclick="toggleConnectionMode()" id="dash-mode-switch-btn" class="flex-1 lg:flex-initial px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-300 text-xs font-extrabold transition flex items-center justify-center gap-1.5 border border-amber-400/30">
+            <span>تبديل: متصل سحابي / محلي</span>
+          </button>
           <button onclick="openCloudSyncModal()" class="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition shadow-sm flex items-center justify-center gap-1.5">
             <span>إعدادات الشيت وروابط Drive 🔗</span>
           </button>
@@ -986,6 +1032,8 @@ function doPost(e) {
     const STORAGE_KEY_CUSTOM_BOOKS = 'sudan_islamic_custom_books_v2';
     const STORAGE_KEY_GAS_URL = 'sudan_islamic_gas_url_v2';
     const STORAGE_KEY_AUTO_SYNC = 'sudan_islamic_auto_sync_v2';
+    const STORAGE_KEY_CONNECTION_MODE = 'sudan_islamic_connection_mode_v2';
+    const STORAGE_KEY_LAST_SAVED = 'sudan_islamic_last_saved_v2';
     const STORAGE_KEY_BOOK_CLOUD_URLS = 'sudan_islamic_book_cloud_urls_v2';
     const STORAGE_KEY_EXAM_CLOUD_URLS = 'sudan_islamic_exam_cloud_urls_v2';
     const DEFAULT_GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby8I3Grwxb1EB7Dqi7QyQP2vPtd_M2hxH-4whAVni2iNkqmu-m1oTK_TKEmvazO05CX/exec';
@@ -1425,6 +1473,9 @@ function doPost(e) {
     const examFileObjects = {};
     let gasWebAppUrl = safeGetStorage(STORAGE_KEY_GAS_URL, DEFAULT_GAS_WEBAPP_URL) || DEFAULT_GAS_WEBAPP_URL;
     let autoSyncEnabled = safeGetStorage(STORAGE_KEY_AUTO_SYNC, true);
+    let connectionMode = safeGetStorage(STORAGE_KEY_CONNECTION_MODE, 'cloud'); // 'cloud' | 'local'
+    let lastSavedTime = safeGetStorage(STORAGE_KEY_LAST_SAVED, null);
+    let hasUnsavedChanges = false;
     let bookCloudUrls = safeGetStorage(STORAGE_KEY_BOOK_CLOUD_URLS, {});
     let examCloudUrls = safeGetStorage(STORAGE_KEY_EXAM_CLOUD_URLS, {});
     let syncTimeoutId = null;
@@ -2819,7 +2870,144 @@ function doPost(e) {
     function toggleAutoSyncSetting(event) {
       autoSyncEnabled = Boolean(event.target.checked);
       safeSetStorage(STORAGE_KEY_AUTO_SYNC, autoSyncEnabled);
-      showToast(autoSyncEnabled ? 'تم تفعيل المزامنة التلقائية الفورية مع Google Sheets!' : 'تم إيقاف المزامنة التلقائية.');
+      const modalCheck = document.getElementById('auto-sync-checkbox');
+      const headerCheck = document.getElementById('header-autosave-toggle');
+      if (modalCheck) modalCheck.checked = autoSyncEnabled;
+      if (headerCheck) headerCheck.checked = autoSyncEnabled;
+      showToast(autoSyncEnabled ? 'تم تفعيل الحفظ التلقائي الفوري عند التعديل وعند التحديث!' : 'تم إيقاف المزامنة التلقائية (يمكنك الحفظ بزر حفظ التعديلات).');
+    }
+
+    function setConnectionMode(mode) {
+      connectionMode = mode === 'local' ? 'local' : 'cloud';
+      safeSetStorage(STORAGE_KEY_CONNECTION_MODE, connectionMode);
+      renderConnectionModeUI();
+      if (connectionMode === 'cloud') {
+        showToast('تم التبديل إلى وضع "متصل سحابي ☁️" (مزامنة مع Google Sheets + حفظ محلي).');
+        if (autoSyncEnabled) {
+          syncToGoogleSheets(false);
+        }
+      } else {
+        showToast('تم التبديل إلى وضع "متصل محلي 💻" (حفظ فوري على هذا الجهاز بدون إنترنت).');
+        updateSyncStatusUI('متصل محلي 💻 (محفوظ على الجهاز)', 'local');
+      }
+    }
+
+    function toggleConnectionMode() {
+      setConnectionMode(connectionMode === 'cloud' ? 'local' : 'cloud');
+    }
+
+    function renderConnectionModeUI() {
+      const btnCloud = document.getElementById('mode-btn-cloud');
+      const btnLocal = document.getElementById('mode-btn-local');
+      const liveBadge = document.getElementById('connection-live-badge');
+      const liveDot = document.getElementById('connection-live-dot');
+      const liveText = document.getElementById('connection-live-text');
+      const dashSwitchBtn = document.getElementById('dash-mode-switch-btn');
+      const headerCheck = document.getElementById('header-autosave-toggle');
+      const modalCheck = document.getElementById('auto-sync-checkbox');
+
+      if (headerCheck) headerCheck.checked = Boolean(autoSyncEnabled);
+      if (modalCheck) modalCheck.checked = Boolean(autoSyncEnabled);
+
+      const isOnline = navigator.onLine !== false;
+
+      if (connectionMode === 'cloud' && isOnline) {
+        if (btnCloud) {
+          btnCloud.className = 'px-3 py-1 rounded-lg font-extrabold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-xs';
+        }
+        if (btnLocal) {
+          btnLocal.className = 'px-3 py-1 rounded-lg font-extrabold transition flex items-center gap-1.5 text-emerald-200 hover:text-white';
+        }
+        if (liveBadge) {
+          liveBadge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-100 font-bold flex items-center gap-1.5';
+        }
+        if (liveDot) {
+          liveDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        }
+        if (liveText) {
+          liveText.textContent = 'الحالة: متصل سحابي ☁️ (Google Sheets + حفظ محلي)';
+        }
+        if (dashSwitchBtn) {
+          dashSwitchBtn.innerHTML = '<span>الوضع: متصل سحابي ☁️ (اضغط للتحويل لمحلي)</span>';
+        }
+      } else {
+        if (btnCloud) {
+          btnCloud.className = 'px-3 py-1 rounded-lg font-extrabold transition flex items-center gap-1.5 text-emerald-200 hover:text-white';
+        }
+        if (btnLocal) {
+          btnLocal.className = 'px-3 py-1 rounded-lg font-extrabold transition flex items-center gap-1.5 bg-amber-400 text-emerald-950 shadow-xs';
+        }
+        if (liveBadge) {
+          liveBadge.className = 'px-2.5 py-1 rounded-lg bg-amber-400/20 border border-amber-300/40 text-amber-200 font-bold flex items-center gap-1.5';
+        }
+        if (liveDot) {
+          liveDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        }
+        if (liveText) {
+          liveText.textContent = isOnline
+            ? 'الحالة: متصل محلي 💻 (حفظ مباشر على المتصفح والجهاز)'
+            : 'الحالة: متصل محلي 💻 (بدون إنترنت - حفظ محلي تلقائي)';
+        }
+        if (dashSwitchBtn) {
+          dashSwitchBtn.innerHTML = '<span>الوضع: متصل محلي 💻 (اضغط للتحويل لسحابي)</span>';
+        }
+      }
+    }
+
+    function persistAllStateLocally() {
+      if (!document.getElementById('cloud-sync-modal').classList.contains('hidden')) {
+        collectCloudLinksFromModal();
+      }
+      safeSetStorage(STORAGE_KEY_COMPLETED, completedChapters);
+      safeSetStorage(STORAGE_KEY_CUSTOM_BOOKS, customBooks);
+      safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      safeSetStorage(STORAGE_KEY_BOOK_CLOUD_URLS, bookCloudUrls);
+      safeSetStorage(STORAGE_KEY_EXAM_CLOUD_URLS, examCloudUrls);
+      safeSetStorage(STORAGE_KEY_GAS_URL, gasWebAppUrl);
+      safeSetStorage(STORAGE_KEY_AUTO_SYNC, autoSyncEnabled);
+      safeSetStorage(STORAGE_KEY_CONNECTION_MODE, connectionMode);
+
+      const nowStr = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      lastSavedTime = nowStr;
+      safeSetStorage(STORAGE_KEY_LAST_SAVED, lastSavedTime);
+      hasUnsavedChanges = false;
+
+      const savedIndicator = document.getElementById('header-last-saved-indicator');
+      if (savedIndicator) {
+        savedIndicator.textContent = `تم الحفظ التلقائي: ${nowStr} ✓`;
+        savedIndicator.className = 'text-[11px] text-emerald-200 font-bold hidden sm:inline';
+      }
+    }
+
+    async function saveAllModificationsNow() {
+      const saveBtn = document.getElementById('header-save-changes-btn');
+      if (saveBtn) {
+        saveBtn.innerHTML = '<span>جاري الحفظ... ⏳</span>';
+      }
+
+      persistAllStateLocally();
+      updateAllViews();
+
+      if (connectionMode === 'cloud' && navigator.onLine !== false && gasWebAppUrl) {
+        await syncToGoogleSheets(false);
+        showToast('تم حفظ جميع التعديلات محلياً وسحابياً في Google Sheets بنجاح! 💾☁️');
+      } else {
+        updateSyncStatusUI('متصل محلي 💻 (تم حفظ التعديلات)', 'local');
+        showToast('تم حفظ جميع التعديلات محلياً على جهازك بنجاح! 💾💻');
+      }
+
+      if (saveBtn) {
+        saveBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>تم الحفظ ✓</span>
+        `;
+        setTimeout(() => {
+          saveBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>حفظ التعديلات 💾</span>
+          `;
+        }, 2000);
+      }
     }
 
     function renderCloudLinksInputs() {
@@ -2912,11 +3100,27 @@ function doPost(e) {
     }
 
     function scheduleAutoSyncToGoogleSheets() {
-      if (!autoSyncEnabled || !gasWebAppUrl) return;
+      hasUnsavedChanges = true;
+      if (autoSyncEnabled) {
+        persistAllStateLocally();
+      } else {
+        const savedIndicator = document.getElementById('header-last-saved-indicator');
+        if (savedIndicator) {
+          savedIndicator.textContent = 'توجد تعديلات غير محفوظة • اضغط حفظ التعديلات';
+          savedIndicator.className = 'text-[11px] text-amber-300 font-extrabold hidden sm:inline';
+        }
+        return;
+      }
+
+      if (connectionMode !== 'cloud' || navigator.onLine === false || !gasWebAppUrl) {
+        updateSyncStatusUI('متصل محلي 💻 (محفوظ تلقائياً)', 'local');
+        return;
+      }
+
       if (syncTimeoutId) clearTimeout(syncTimeoutId);
       syncTimeoutId = setTimeout(() => {
         syncToGoogleSheets(false);
-      }, 900);
+      }, 800);
     }
 
     async function syncToGoogleSheets(showNotification = true) {
@@ -3067,11 +3271,60 @@ function doPost(e) {
       ta.remove();
     }
 
+    // Auto-save on page refresh / tab close / visibility change
+    window.addEventListener('beforeunload', () => {
+      if (autoSyncEnabled || hasUnsavedChanges) {
+        persistAllStateLocally();
+        if (connectionMode === 'cloud' && navigator.onLine !== false && gasWebAppUrl && navigator.sendBeacon) {
+          try {
+            const payload = JSON.stringify({
+              completedChapters,
+              customBooks,
+              examsList,
+              bookCloudUrls,
+              examCloudUrls,
+              updatedAt: new Date().toISOString()
+            });
+            navigator.sendBeacon(gasWebAppUrl, new Blob([payload], { type: 'text/plain;charset=utf-8' }));
+          } catch (e) {}
+        }
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && autoSyncEnabled) {
+        persistAllStateLocally();
+      }
+    });
+
+    window.addEventListener('online', () => {
+      renderConnectionModeUI();
+      if (connectionMode === 'cloud') {
+        showToast('عاد الاتصال بالإنترنت: وضع متصل سحابي ☁️ نشط الآن.');
+        if (autoSyncEnabled) syncToGoogleSheets(false);
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      renderConnectionModeUI();
+      updateSyncStatusUI('متصل محلي 💻 (بدون إنترنت)', 'local');
+      showToast('انقطع الإنترنت: تم التحويل تلقائياً إلى الحفظ المحلي 💻.');
+    });
+
     // Initialize on load
     document.addEventListener('DOMContentLoaded', () => {
+      renderConnectionModeUI();
       updateAllViews();
       restorePdfsFromDB();
-      fetchFromGoogleSheets(false);
+      if (lastSavedTime) {
+        const savedIndicator = document.getElementById('header-last-saved-indicator');
+        if (savedIndicator) savedIndicator.textContent = `آخر حفظ: ${lastSavedTime} ✓`;
+      }
+      if (connectionMode === 'cloud' && navigator.onLine !== false) {
+        fetchFromGoogleSheets(false);
+      } else {
+        updateSyncStatusUI('متصل محلي 💻 (محفوظ على الجهاز)', 'local');
+      }
     });
   </script>
 </body>
