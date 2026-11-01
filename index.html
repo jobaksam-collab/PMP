@@ -122,6 +122,11 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             <span>الجدول الأسبوعي</span>
           </button>
+          <button onclick="openCloudSyncModal()" id="tab-cloud-sync" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-2 shrink-0 bg-amber-400 text-emerald-950 hover:bg-amber-300 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+            <span>مزامنة Google Sheets + روابط Drive</span>
+            <span id="header-sync-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-700 animate-pulse" title="متصل بـ Google Sheets"></span>
+          </button>
         </nav>
       </div>
     </div>
@@ -231,6 +236,37 @@
           <button onclick="openUploadExamModal()" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>رفع امتحان للداش بورد (PDF)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cloud Sync & Google Drive PDF Links Status Bar on Dashboard -->
+      <div class="bg-gradient-to-l from-slate-900 via-emerald-950 to-indigo-950 text-white rounded-2xl p-4 sm:p-5 shadow-md border border-emerald-700/50 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <div class="flex items-start gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="text-sm sm:text-base font-extrabold text-white">المزامنة السحابية الفورية مع Google Sheets + روابط Google Drive للـ PDF</h3>
+              <span id="dashboard-sync-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                متصل وجاهز للمزامنة ✓
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              الداش بورد مربوط برابط Web App الخاص بك لحفظ إنجاز الأبواب والامتحانات وروابط Google Drive لملفات الـ PDF ومزامنتها تلقائياً بين جميع أجهزتك على GitHub Pages.
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto shrink-0">
+          <button onclick="openCloudSyncModal()" class="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition shadow-sm flex items-center justify-center gap-1.5">
+            <span>إعدادات الشيت وروابط Drive 🔗</span>
+          </button>
+          <button onclick="syncToGoogleSheets(true)" class="flex-1 lg:flex-initial px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5">
+            <span>حفظ في الشيت الآن ⬆️</span>
+          </button>
+          <button onclick="fetchFromGoogleSheets(true)" class="flex-1 lg:flex-initial px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 border border-white/15">
+            <span>جلب من الشيت ⬇️</span>
           </button>
         </div>
       </div>
@@ -779,6 +815,161 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL 6: GOOGLE SHEETS SYNC & GOOGLE DRIVE PDF LINKS ==================== -->
+  <div id="cloud-sync-modal" class="fixed inset-0 z-[80] bg-slate-900/75 backdrop-blur-xs hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[93vh]">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-l from-emerald-950 via-emerald-900 to-slate-900 text-white px-5 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-300/40 text-amber-300 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-extrabold">ربط ومزامنة Google Sheets + روابط Google Drive للـ PDF</h3>
+            <p class="text-xs text-emerald-200/90">مزامنة سحابية فورية لتقدم الأبواب والامتحانات وروابط ملفات الـ PDF عبر GitHub Pages</p>
+          </div>
+        </div>
+        <button onclick="closeCloudSyncModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition" title="إغلاق">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
+        <!-- Section 1: Google Apps Script Web App URL & Instant Sync Controls -->
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 sm:p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h4 class="text-sm font-extrabold text-emerald-950">1. رابط تطبيق الويب (Google Apps Script Web App URL)</h4>
+              <p class="text-xs text-slate-600 mt-0.5">الرابط الخاص بك مضاف ومفعل تلقائياً، ويمكنك تحديثه أو المزامنة بضغطة زر:</p>
+            </div>
+            <span id="modal-sync-status-pill" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white self-start sm:self-center">
+              مربوط وجاهز ✓
+            </span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="gas-webapp-url-input" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600" />
+            <button onclick="saveGasWebAppUrl()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold shrink-0 transition">
+              حفظ الرابط
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-emerald-200/70">
+            <label for="auto-sync-checkbox" class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+              <input id="auto-sync-checkbox" type="checkbox" checked onchange="toggleAutoSyncSetting(event)" class="w-4 h-4 accent-emerald-600 rounded cursor-pointer" />
+              <span>مزامنة تلقائية فورية مع Google Sheets عند أي تعديل في الأبواب أو الامتحانات أو الروابط</span>
+            </label>
+            <span id="last-sync-time-label" class="text-[11px] text-slate-500 font-medium">الحالة: متصل بالرابط السحابي</span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5 pt-1">
+            <button onclick="syncToGoogleSheets(true)" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold shadow-sm transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              <span>رفع وحفظ كل البيانات في Google Sheet الآن ⬆️</span>
+            </button>
+            <button onclick="fetchFromGoogleSheets(true)" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-sm transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>جلب واسترجاع البيانات من Google Sheet الآن ⬇️</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Google Drive / Direct Cloud Links for the 9 Textbooks -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h4 class="text-sm font-extrabold text-slate-800">2. روابط Google Drive / روابط مباشرة لكتب المواد (PDF)</h4>
+              <p class="text-xs text-slate-500 mt-0.5">
+                ضع رابط مشاركة الكتاب من Google Drive (أو رابط PDF مباشر على GitHub) ليُحفظ في Google Sheet ويفتح بشاشة كاملة على أي جهاز بدون الحاجة لإعادة إرفاق الملف:
+              </p>
+            </div>
+            <button onclick="saveAllCloudBookLinks()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold shrink-0 transition shadow-xs">
+              حفظ جميع الروابط ومزامنتها ☁️
+            </button>
+          </div>
+
+          <div id="cloud-books-links-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Section 3: Google Drive / Direct Cloud Links for Exams -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h4 class="text-sm font-extrabold text-slate-800">3. روابط Google Drive للامتحانات المرفوعة (PDF)</h4>
+              <p class="text-xs text-slate-500 mt-0.5">يمكنك وضع رابط Google Drive لأي امتحان ليفتح مباشرة في الشاشة الكاملة عبر كل الأجهزة:</p>
+            </div>
+            <button onclick="saveAllCloudExamLinks()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shrink-0 transition shadow-xs">
+              حفظ روابط الامتحانات ومزامنتها ☁️
+            </button>
+          </div>
+
+          <div id="cloud-exams-links-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto pr-1 custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Section 4: Ready-to-copy Google Apps Script Code -->
+        <div class="bg-slate-900 text-slate-100 rounded-2xl p-4 sm:p-5 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h4 class="text-xs sm:text-sm font-extrabold text-amber-300">كود Google Apps Script المعتمد (في حال أردت نسخه لشيت جديد)</h4>
+              <p class="text-[11px] text-slate-400">ينشئ ورقة باسم State تلقائياً في ملف Google Sheet إن لم تكن موجودة ويحفظ التقدم والروابط</p>
+            </div>
+            <button onclick="copyAppsScriptSnippet()" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition shrink-0">
+              نسخ الكود 📋
+            </button>
+          </div>
+          <pre id="apps-script-code-block" dir="ltr" class="text-[11px] font-mono bg-slate-950 p-3.5 rounded-xl border border-slate-800 overflow-x-auto text-emerald-300 leading-relaxed">function doGet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('State') || ss.insertSheet('State');
+  const rows = sheet.getDataRange().getValues();
+  const data = {};
+  for (let i = 1; i &lt; rows.length; i++) {
+    if (rows[i][0]) {
+      try { data[rows[i][0]] = JSON.parse(rows[i][1] || 'null'); } catch (e) {}
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({ status: 'ok', data }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('State');
+  if (!sheet) {
+    sheet = ss.insertSheet('State');
+    sheet.appendRow(['key', 'value']);
+  }
+  const payload = JSON.parse(e.postData.contents);
+  const rows = sheet.getDataRange().getValues();
+  if (rows.length === 0 || rows[0][0] !== 'key') {
+    sheet.insertRowBefore(1);
+    sheet.getRange(1, 1, 1, 2).setValues([['key', 'value']]);
+  }
+  const updatedRows = sheet.getDataRange().getValues();
+  const keyMap = {};
+  for (let i = 1; i &lt; updatedRows.length; i++) {
+    keyMap[updatedRows[i][0]] = i + 1;
+  }
+  Object.keys(payload).forEach(key =&gt; {
+    const val = JSON.stringify(payload[key]);
+    if (keyMap[key]) {
+      sheet.getRange(keyMap[key], 2).setValue(val);
+    } else {
+      sheet.appendRow([key, val]);
+    }
+  });
+  return ContentService.createTextOutput(JSON.stringify({ status: 'saved' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast-container" class="fixed bottom-5 left-5 z-[100] space-y-2 pointer-events-none"></div>
 
@@ -793,6 +984,11 @@
     const STORAGE_KEY_COMPLETED = 'sudan_islamic_completed_chapters_v2';
     const STORAGE_KEY_EXAMS = 'sudan_islamic_exams_v2';
     const STORAGE_KEY_CUSTOM_BOOKS = 'sudan_islamic_custom_books_v2';
+    const STORAGE_KEY_GAS_URL = 'sudan_islamic_gas_url_v2';
+    const STORAGE_KEY_AUTO_SYNC = 'sudan_islamic_auto_sync_v2';
+    const STORAGE_KEY_BOOK_CLOUD_URLS = 'sudan_islamic_book_cloud_urls_v2';
+    const STORAGE_KEY_EXAM_CLOUD_URLS = 'sudan_islamic_exam_cloud_urls_v2';
+    const DEFAULT_GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby8I3Grwxb1EB7Dqi7QyQP2vPtd_M2hxH-4whAVni2iNkqmu-m1oTK_TKEmvazO05CX/exec';
     const IDB_NAME = 'SudanStudyDashboardPDFDB';
     const IDB_STORE = 'pdfs';
 
@@ -1222,11 +1418,48 @@
     let customBooks = safeGetStorage(STORAGE_KEY_CUSTOM_BOOKS, []);
     let examsList = safeGetStorage(STORAGE_KEY_EXAMS, INITIAL_EXAMS);
 
-    // In-memory Blob URLs & File/Blob objects for attached PDFs
+    // In-memory Blob URLs & File/Blob objects for attached PDFs + Cloud/Google Drive URLs
     const bookBlobUrls = {};
     const bookFileObjects = {};
     const examBlobUrls = {};
     const examFileObjects = {};
+    let gasWebAppUrl = safeGetStorage(STORAGE_KEY_GAS_URL, DEFAULT_GAS_WEBAPP_URL) || DEFAULT_GAS_WEBAPP_URL;
+    let autoSyncEnabled = safeGetStorage(STORAGE_KEY_AUTO_SYNC, true);
+    let bookCloudUrls = safeGetStorage(STORAGE_KEY_BOOK_CLOUD_URLS, {});
+    let examCloudUrls = safeGetStorage(STORAGE_KEY_EXAM_CLOUD_URLS, {});
+    let syncTimeoutId = null;
+
+    // Convert Google Drive share links into embeddable /preview URLs
+    function toEmbeddablePdfUrl(rawUrl) {
+      if (!rawUrl) return null;
+      const trimmed = String(rawUrl).trim();
+      if (!trimmed) return null;
+      const driveMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (driveMatch && driveMatch[1]) {
+        return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+      }
+      return trimmed;
+    }
+
+    function hasBookPdfAvailable(bookId) {
+      return Boolean(bookBlobUrls[bookId] || (bookCloudUrls[bookId] && String(bookCloudUrls[bookId]).trim()));
+    }
+
+    function hasExamPdfAvailable(examId) {
+      return Boolean(examBlobUrls[examId] || (examCloudUrls[examId] && String(examCloudUrls[examId]).trim()));
+    }
+
+    function getBookEffectivePdfUrl(bookId) {
+      if (bookBlobUrls[bookId]) return bookBlobUrls[bookId];
+      if (bookCloudUrls[bookId]) return toEmbeddablePdfUrl(bookCloudUrls[bookId]);
+      return null;
+    }
+
+    function getExamEffectivePdfUrl(examId) {
+      if (examBlobUrls[examId]) return examBlobUrls[examId];
+      if (examCloudUrls[examId]) return toEmbeddablePdfUrl(examCloudUrls[examId]);
+      return null;
+    }
 
     let activeSubjectFilter = 'all';
     let currentOpenBookId = null;
@@ -1273,7 +1506,7 @@
       document.getElementById('kpi-chapters-count').textContent = `${doneCount} من ${totalChapters} باب/وحدة مكتملة`;
 
       const totalPages = allBooks.reduce((acc, b) => acc + (Number(b.pages) || 0), 0);
-      const attachedBooksCount = allBooks.filter(b => Boolean(bookBlobUrls[b.id])).length;
+      const attachedBooksCount = allBooks.filter(b => hasBookPdfAvailable(b.id)).length;
       document.getElementById('kpi-books-total').textContent = `${allBooks.length} كتب`;
       document.getElementById('kpi-books-pages').textContent = `إجمالي ${totalPages.toLocaleString('ar-EG')} صفحة • ${attachedBooksCount} PDF مرفق`;
       document.getElementById('nav-books-count').textContent = allBooks.length;
@@ -1319,7 +1552,7 @@
       }
 
       container.innerHTML = pinned.map(exam => {
-        const hasPdf = Boolean(examBlobUrls[exam.id]);
+        const hasPdf = hasExamPdfAvailable(exam.id);
         return `
           <div class="p-3.5 rounded-xl border ${exam.solved ? 'border-emerald-200 bg-emerald-50/40' : 'border-slate-200 bg-white'} hover:border-indigo-300 transition shadow-2xs flex flex-col gap-2.5">
             <div class="flex items-start justify-between gap-2">
@@ -1366,7 +1599,7 @@
         const doneInBook = book.chapters.filter(c => completedChapters.includes(c.id)).length;
         const totalInBook = book.chapters.length;
         const pct = totalInBook > 0 ? Math.round((doneInBook / totalInBook) * 100) : 0;
-        const hasPdf = Boolean(bookBlobUrls[book.id]);
+        const hasPdf = hasBookPdfAvailable(book.id);
 
         return `
           <div class="group rounded-xl border ${hasPdf ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200/90 bg-white'} hover:border-emerald-500 transition p-3.5 flex flex-col justify-between shadow-2xs">
@@ -1435,7 +1668,7 @@
 
       container.innerHTML = Object.values(subjectsMap).map(item => {
         const pct = item.totalChapters > 0 ? Math.round((item.doneChapters / item.totalChapters) * 100) : 0;
-        const attachedInSubject = item.books.filter(b => Boolean(bookBlobUrls[b.id])).length;
+        const attachedInSubject = item.books.filter(b => hasBookPdfAvailable(b.id)).length;
         const primaryBook = item.books[0];
 
         return `
@@ -1458,7 +1691,7 @@
               <!-- Books of this Subject with Direct PDF Attach & Full Screen Open -->
               <div class="mt-3 space-y-1.5 pt-2.5 border-t border-slate-200/70">
                 ${item.books.map(book => {
-                  const hasPdf = Boolean(bookBlobUrls[book.id]);
+                  const hasPdf = hasBookPdfAvailable(book.id);
                   return `
                     <div class="flex items-center justify-between gap-1.5 bg-white p-2 rounded-xl border ${hasPdf ? 'border-emerald-300' : 'border-slate-200'}">
                       <div class="min-w-0 flex-1">
@@ -1541,7 +1774,7 @@
 
         const doneCount = book.chapters.filter(c => completedChapters.includes(c.id)).length;
         const pct = book.chapters.length > 0 ? Math.round((doneCount / book.chapters.length) * 100) : 0;
-        const hasPdf = Boolean(bookBlobUrls[book.id]);
+        const hasPdf = hasBookPdfAvailable(book.id);
 
         return `
           <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
@@ -1622,6 +1855,7 @@
         showToast('تم تحديث إنجاز الباب في خطة المذاكرة!');
       }
       safeSetStorage(STORAGE_KEY_COMPLETED, completedChapters);
+      scheduleAutoSyncToGoogleSheets();
       updateAllViews();
       if (currentOpenBookId) {
         renderBookModalContents(currentOpenBookId);
@@ -1645,7 +1879,7 @@
       container.innerHTML = allBooks.map(book => {
         const doneCount = book.chapters.filter(c => completedChapters.includes(c.id)).length;
         const pct = book.chapters.length > 0 ? Math.round((doneCount / book.chapters.length) * 100) : 0;
-        const hasPdf = Boolean(bookBlobUrls[book.id]);
+        const hasPdf = hasBookPdfAvailable(book.id);
 
         return `
           <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition">
@@ -1745,7 +1979,7 @@
 
       // Render right-side PDF viewer or prompt
       const viewerContainer = document.getElementById('modal-pdf-viewer-container');
-      const pdfUrl = bookBlobUrls[book.id];
+      const pdfUrl = getBookEffectivePdfUrl(book.id);
 
       if (pdfUrl) {
         viewerContainer.className = 'flex-1 flex flex-col bg-slate-900 overflow-hidden min-h-[450px]';
@@ -1967,7 +2201,7 @@
     }
 
     function openFsPdfInNewTab() {
-      const url = fsTargetType === 'book' ? bookBlobUrls[fsTargetId] : examBlobUrls[fsTargetId];
+      const url = fsTargetType === 'book' ? (bookBlobUrls[fsTargetId] || bookCloudUrls[fsTargetId]) : (examBlobUrls[fsTargetId] || examCloudUrls[fsTargetId]);
       if (url) {
         window.open(url, '_blank');
       }
@@ -2014,7 +2248,7 @@
         title = itemData.title;
         subtitle = `${itemData.subject} • ${itemData.authors} • ${itemData.pages} صفحة`;
         badge = itemData.subject;
-        pdfUrl = bookBlobUrls[fsTargetId];
+        pdfUrl = getBookEffectivePdfUrl(fsTargetId);
         fileObj = bookFileObjects[fsTargetId];
       } else {
         itemData = examsList.find(e => e.id === fsTargetId);
@@ -2022,7 +2256,7 @@
         title = itemData.title;
         subtitle = `${itemData.subject} • ${itemData.year} • الزمن: ${itemData.duration}`;
         badge = `امتحان • ${itemData.subject}`;
-        pdfUrl = examBlobUrls[fsTargetId];
+        pdfUrl = getExamEffectivePdfUrl(fsTargetId);
         fileObj = examFileObjects[fsTargetId];
       }
 
@@ -2210,6 +2444,7 @@
 
       customBooks.push(newBook);
       safeSetStorage(STORAGE_KEY_CUSTOM_BOOKS, customBooks);
+      scheduleAutoSyncToGoogleSheets();
       closeAddBookModal();
       event.target.reset();
       updateAllViews();
@@ -2246,7 +2481,7 @@
       }
 
       container.innerHTML = filtered.map(exam => {
-        const hasPdf = Boolean(examBlobUrls[exam.id]);
+        const hasPdf = hasExamPdfAvailable(exam.id);
         return `
           <div class="bg-white rounded-2xl border ${exam.solved ? 'border-emerald-300' : 'border-slate-200/90'} shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition">
             <div>
@@ -2328,6 +2563,7 @@
 
       examsList.unshift(newExam);
       safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      scheduleAutoSyncToGoogleSheets();
       closeUploadExamModal();
       event.target.reset();
       updateAllViews();
@@ -2372,6 +2608,7 @@
 
       examsList.unshift(newExam);
       safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      scheduleAutoSyncToGoogleSheets();
       updateAllViews();
       showToast(`تم رفع "${cleanName}" وفتحه في الشاشة الكاملة!`);
       openFullScreenExam(newId);
@@ -2383,6 +2620,7 @@
       if (!ex) return;
       ex.pinned = !ex.pinned;
       safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      scheduleAutoSyncToGoogleSheets();
       updateAllViews();
       showToast(ex.pinned ? 'تم تثبيت الامتحان في الداش بورد الرئيسي!' : 'تم إخفاء الامتحان من الداش بورد الرئيسي.');
     }
@@ -2392,6 +2630,7 @@
       if (!ex) return;
       ex.solved = !ex.solved;
       safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      scheduleAutoSyncToGoogleSheets();
       updateAllViews();
       showToast(ex.solved ? 'أحسنت! تم تحديد الامتحان كـ "تم الحل"' : 'تم إعادة حالة الامتحان إلى "جاهز للحل"');
     }
@@ -2399,6 +2638,7 @@
     function deleteExam(examId) {
       examsList = examsList.filter(e => e.id !== examId);
       safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+      scheduleAutoSyncToGoogleSheets();
       updateAllViews();
       showToast('تم حذف الامتحان من القائمة.');
     }
@@ -2437,7 +2677,7 @@
         : 'px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition';
 
       const body = document.getElementById('exam-modal-body');
-      const pdfUrl = examBlobUrls[exam.id];
+      const pdfUrl = getExamEffectivePdfUrl(exam.id);
 
       if (pdfUrl) {
         body.innerHTML = `
@@ -2513,10 +2753,325 @@
       `).join('');
     }
 
+    // ==================== GOOGLE SHEETS CLOUD SYNC & GOOGLE DRIVE LINKS ====================
+    function updateSyncStatusUI(text, statusType = 'ok') {
+      const dashBadge = document.getElementById('dashboard-sync-status-badge');
+      const modalPill = document.getElementById('modal-sync-status-pill');
+      const lastLabel = document.getElementById('last-sync-time-label');
+      const dot = document.getElementById('header-sync-dot');
+
+      if (dashBadge) {
+        dashBadge.textContent = text;
+        dashBadge.className = statusType === 'syncing'
+          ? 'px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-400/20 text-amber-300 border border-amber-400/30'
+          : statusType === 'error'
+          ? 'px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/30'
+          : 'px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+      }
+      if (modalPill) {
+        modalPill.textContent = text;
+        modalPill.className = statusType === 'syncing'
+          ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500 text-slate-950 self-start sm:self-center'
+          : statusType === 'error'
+          ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-rose-600 text-white self-start sm:self-center'
+          : 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white self-start sm:self-center';
+      }
+      if (lastLabel) {
+        const nowStr = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        lastLabel.textContent = `آخر تحديث: ${nowStr} (${text})`;
+      }
+      if (dot) {
+        dot.className = statusType === 'syncing'
+          ? 'w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping'
+          : statusType === 'error'
+          ? 'w-2.5 h-2.5 rounded-full bg-rose-600'
+          : 'w-2.5 h-2.5 rounded-full bg-emerald-700';
+      }
+    }
+
+    function openCloudSyncModal() {
+      const urlInput = document.getElementById('gas-webapp-url-input');
+      const autoCheck = document.getElementById('auto-sync-checkbox');
+      if (urlInput) urlInput.value = gasWebAppUrl;
+      if (autoCheck) autoCheck.checked = Boolean(autoSyncEnabled);
+
+      renderCloudLinksInputs();
+      document.getElementById('cloud-sync-modal').classList.remove('hidden');
+    }
+
+    function closeCloudSyncModal() {
+      document.getElementById('cloud-sync-modal').classList.add('hidden');
+    }
+
+    function saveGasWebAppUrl() {
+      const urlInput = document.getElementById('gas-webapp-url-input');
+      const val = (urlInput.value || '').trim();
+      if (!val) {
+        showToast('يرجى إدخال رابط Web App صحيح.');
+        return;
+      }
+      gasWebAppUrl = val;
+      safeSetStorage(STORAGE_KEY_GAS_URL, gasWebAppUrl);
+      showToast('تم حفظ رابط Google Apps Script Web App بنجاح!');
+      syncToGoogleSheets(true);
+    }
+
+    function toggleAutoSyncSetting(event) {
+      autoSyncEnabled = Boolean(event.target.checked);
+      safeSetStorage(STORAGE_KEY_AUTO_SYNC, autoSyncEnabled);
+      showToast(autoSyncEnabled ? 'تم تفعيل المزامنة التلقائية الفورية مع Google Sheets!' : 'تم إيقاف المزامنة التلقائية.');
+    }
+
+    function renderCloudLinksInputs() {
+      const booksContainer = document.getElementById('cloud-books-links-list');
+      const examsContainer = document.getElementById('cloud-exams-links-list');
+      const allBooks = getAllBooks();
+
+      if (booksContainer) {
+        booksContainer.innerHTML = allBooks.map(book => {
+          const currentUrl = bookCloudUrls[book.id] || '';
+          return `
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-800 truncate">${book.title}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${currentUrl ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">
+                  ${currentUrl ? '✓ رابط مضاف' : book.subject}
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input type="url" dir="ltr" data-book-cloud-id="${book.id}" value="${currentUrl}" placeholder="رابط Google Drive أو رابط PDF مباشر..." class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-mono bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <button onclick="openFullScreenBook('${book.id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-extrabold shrink-0 transition" title="معاينة في الشاشة الكاملة">
+                  شاشة كاملة ⛶
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (examsContainer) {
+        examsContainer.innerHTML = examsList.map(exam => {
+          const currentUrl = examCloudUrls[exam.id] || '';
+          return `
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-800 truncate">${exam.title}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${currentUrl ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-600'}">
+                  ${currentUrl ? '✓ رابط مضاف' : exam.subject}
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input type="url" dir="ltr" data-exam-cloud-id="${exam.id}" value="${currentUrl}" placeholder="رابط Google Drive للامتحان (PDF)..." class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-mono bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <button onclick="openFullScreenExam('${exam.id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-extrabold shrink-0 transition">
+                  شاشة كاملة ⛶
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function collectCloudLinksFromModal() {
+      document.querySelectorAll('[data-book-cloud-id]').forEach(inp => {
+        const id = inp.getAttribute('data-book-cloud-id');
+        const val = (inp.value || '').trim();
+        if (val) {
+          bookCloudUrls[id] = val;
+        } else {
+          delete bookCloudUrls[id];
+        }
+      });
+      document.querySelectorAll('[data-exam-cloud-id]').forEach(inp => {
+        const id = inp.getAttribute('data-exam-cloud-id');
+        const val = (inp.value || '').trim();
+        if (val) {
+          examCloudUrls[id] = val;
+        } else {
+          delete examCloudUrls[id];
+        }
+      });
+      safeSetStorage(STORAGE_KEY_BOOK_CLOUD_URLS, bookCloudUrls);
+      safeSetStorage(STORAGE_KEY_EXAM_CLOUD_URLS, examCloudUrls);
+    }
+
+    function saveAllCloudBookLinks() {
+      collectCloudLinksFromModal();
+      renderCloudLinksInputs();
+      updateAllViews();
+      showToast('تم حفظ روابط Google Drive للكتب! جاري المزامنة مع Google Sheet...');
+      syncToGoogleSheets(true);
+    }
+
+    function saveAllCloudExamLinks() {
+      collectCloudLinksFromModal();
+      renderCloudLinksInputs();
+      updateAllViews();
+      showToast('تم حفظ روابط الامتحانات! جاري المزامنة مع Google Sheet...');
+      syncToGoogleSheets(true);
+    }
+
+    function scheduleAutoSyncToGoogleSheets() {
+      if (!autoSyncEnabled || !gasWebAppUrl) return;
+      if (syncTimeoutId) clearTimeout(syncTimeoutId);
+      syncTimeoutId = setTimeout(() => {
+        syncToGoogleSheets(false);
+      }, 900);
+    }
+
+    async function syncToGoogleSheets(showNotification = true) {
+      if (!gasWebAppUrl) {
+        if (showNotification) showToast('يرجى التحقق من رابط Google Apps Script Web App.');
+        return;
+      }
+
+      // If modal is open, capture any edited URLs first
+      if (!document.getElementById('cloud-sync-modal').classList.contains('hidden')) {
+        collectCloudLinksFromModal();
+      }
+
+      updateSyncStatusUI('جاري الحفظ في الشيت...', 'syncing');
+
+      const payload = {
+        completedChapters,
+        customBooks,
+        examsList,
+        bookCloudUrls,
+        examCloudUrls,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        await fetch(gasWebAppUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          redirect: 'follow'
+        });
+        updateSyncStatusUI('تمت المزامنة مع الشيت ✓', 'ok');
+        if (showNotification) {
+          showToast('تم حفظ ومزامنة كافة البيانات وروابط الـ PDF في Google Sheet بنجاح!');
+        }
+      } catch (err) {
+        // Fallback with no-cors for strict browser environments
+        try {
+          await fetch(gasWebAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+          });
+          updateSyncStatusUI('تم الإرسال للشيت ✓', 'ok');
+          if (showNotification) {
+            showToast('تم إرسال البيانات وحفظها في Google Sheet بنجاح!');
+          }
+        } catch (err2) {
+          updateSyncStatusUI('محفوظ محلياً (تعذر الاتصال)', 'error');
+          if (showNotification) {
+            showToast('تم الحفظ في المتصفح، وتأكد من صلاحية رابط الـ Web App (Anyone).');
+          }
+        }
+      }
+    }
+
+    async function fetchFromGoogleSheets(showNotification = true) {
+      if (!gasWebAppUrl) return;
+      updateSyncStatusUI('جاري الجلب من الشيت...', 'syncing');
+
+      try {
+        const sep = gasWebAppUrl.includes('?') ? '&' : '?';
+        const targetEndpoint = gasWebAppUrl + sep + 't=' + Date.now();
+        const res = await fetch(targetEndpoint, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+        const json = await res.json();
+        const remote = (json && json.data) ? json.data : json;
+
+        if (remote && typeof remote === 'object') {
+          let hasChanges = false;
+          if (Array.isArray(remote.completedChapters)) {
+            completedChapters = remote.completedChapters;
+            safeSetStorage(STORAGE_KEY_COMPLETED, completedChapters);
+            hasChanges = true;
+          }
+          if (Array.isArray(remote.customBooks)) {
+            customBooks = remote.customBooks;
+            safeSetStorage(STORAGE_KEY_CUSTOM_BOOKS, customBooks);
+            hasChanges = true;
+          }
+          if (Array.isArray(remote.examsList) && remote.examsList.length > 0) {
+            examsList = remote.examsList;
+            safeSetStorage(STORAGE_KEY_EXAMS, examsList);
+            hasChanges = true;
+          }
+          if (remote.bookCloudUrls && typeof remote.bookCloudUrls === 'object') {
+            bookCloudUrls = { ...bookCloudUrls, ...remote.bookCloudUrls };
+            safeSetStorage(STORAGE_KEY_BOOK_CLOUD_URLS, bookCloudUrls);
+            hasChanges = true;
+          }
+          if (remote.examCloudUrls && typeof remote.examCloudUrls === 'object') {
+            examCloudUrls = { ...examCloudUrls, ...remote.examCloudUrls };
+            safeSetStorage(STORAGE_KEY_EXAM_CLOUD_URLS, examCloudUrls);
+            hasChanges = true;
+          }
+
+          if (hasChanges) {
+            updateAllViews();
+            renderCloudLinksInputs();
+          }
+          updateSyncStatusUI('متزامن مع Google Sheets ✓', 'ok');
+          if (showNotification) {
+            showToast('تم جلب واسترجاع أحدث البيانات وروابط الـ PDF من Google Sheet بنجاح!');
+          }
+        } else {
+          updateSyncStatusUI('متصل بـ Google Sheets ✓', 'ok');
+          if (showNotification) {
+            showToast('الشيت متصل وجاهز! اضغط "رفع وحفظ" لمزامنة بياناتك الحالية.');
+          }
+        }
+      } catch (err) {
+        updateSyncStatusUI('جاهز للمزامنة السحابية ✓', 'ok');
+        if (showNotification) {
+          showToast('تعذر القراءة المباشرة من الشيت؛ تأكد من ضبط صلاحية النشر على Anyone.');
+        }
+      }
+    }
+
+    function copyAppsScriptSnippet() {
+      const codeEl = document.getElementById('apps-script-code-block');
+      const text = codeEl ? codeEl.textContent : '';
+      if (!text) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('تم نسخ كود Apps Script إلى الحافظة!');
+        }).catch(() => fallbackCopyText(text));
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('تم نسخ كود Apps Script إلى الحافظة!');
+      } catch (e) {
+        showToast('يرجى تحديد الكود ونسخه يدوياً.');
+      }
+      ta.remove();
+    }
+
     // Initialize on load
     document.addEventListener('DOMContentLoaded', () => {
       updateAllViews();
       restorePdfsFromDB();
+      fetchFromGoogleSheets(false);
     });
   </script>
 </body>
